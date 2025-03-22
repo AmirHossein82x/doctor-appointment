@@ -4,7 +4,7 @@ export $(shell sed 's/=.*//' .env)
 
 
 # Database URL to use in migration command
-DB_URL=postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@localhost:5432/todo?sslmode=disable
+DB_URL=postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSLMODE)
 
 
 

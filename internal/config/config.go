@@ -8,14 +8,18 @@ import (
 
 // Config struct to hold environment variables
 type Config struct {
-	DB_HOST     string
-	DB_PORT     string
-	DB_USER     string
-	DB_PASSWORD string
-	DB_NAME     string
-	DB_SSLMODE  string
-	REDIS_ADDR  string
-	REDIS_DB    string
+	DB_HOST          string
+	DB_PORT          string
+	DB_USER          string
+	DB_PASSWORD      string
+	DB_NAME          string
+	DB_SSLMODE       string
+	REDIS_ADDR       string
+	REDIS_DB         string
+	ELASTIC_USERNAME string
+	ELASTIC_PASSWORD string
+	ELASTIC_ADDR     string
+	ELASTIC_INDEX    string
 }
 
 // LoadConfig reads the .env file and maps it to the Config struct
@@ -26,14 +30,18 @@ func LoadConfig() *Config {
 	}
 
 	return &Config{
-		DB_HOST:     getEnv("DB_HOST", "default"),
-		DB_PORT:     getEnv("DB_PORT", "default"),
-		DB_USER:     getEnv("DB_USER", "default"),
-		DB_PASSWORD: getEnv("DB_PASSWORD", "default"),
-		DB_NAME:     getEnv("DB_NAME", "default"),
-		DB_SSLMODE:  getEnv("DB_SSLMODE", "default"),
-		REDIS_ADDR:  getEnv("REDIS_ADDR", "default"),
-		REDIS_DB:    getEnv("REDIS_DB", "default"),
+		DB_HOST:          getEnv("DB_HOST", "default"),
+		DB_PORT:          getEnv("DB_PORT", "default"),
+		DB_USER:          getEnv("DB_USER", "default"),
+		DB_PASSWORD:      getEnv("DB_PASSWORD", "default"),
+		DB_NAME:          getEnv("DB_NAME", "default"),
+		DB_SSLMODE:       getEnv("DB_SSLMODE", "default"),
+		REDIS_ADDR:       getEnv("REDIS_ADDR", "default"),
+		REDIS_DB:         getEnv("REDIS_DB", "default"),
+		ELASTIC_USERNAME: getEnv("ELASTIC_USERNAME", "default"),
+		ELASTIC_PASSWORD: getEnv("ELASTIC_PASSWORD", "default"),
+		ELASTIC_ADDR:     getEnv("ELASTIC_ADDR", "default"),
+		ELASTIC_INDEX:    getEnv("ELASTIC_INDEX", "default"),
 	}
 }
 

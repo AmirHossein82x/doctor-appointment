@@ -7,14 +7,19 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func NewRedisClient() *redis.Client {
-	config := config.LoadConfig()
-	RedisDb, err := strconv.Atoi(config.REDIS_DB)
-	if err != nil {
-		panic(err)
+var redisClient *redis.Client
+
+func GetRedisClient() *redis.Client {
+	if redisClient == nil {
+		config := config.LoadConfig()
+		RedisDb, err := strconv.Atoi(config.REDIS_DB)
+		if err != nil {
+			panic(err)
+		}
+		redisClient = redis.NewClient(&redis.Options{
+			Addr: config.REDIS_ADDR,
+			DB:   RedisDb,
+		})
 	}
-	return redis.NewClient(&redis.Options{
-		Addr: config.REDIS_ADDR,
-		DB:   RedisDb,
-	})
+	return redisClient
 }

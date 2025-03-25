@@ -1,5 +1,6 @@
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM golang:1.24-alpine AS builder
+
 # Install dependencies
 RUN apk add --no-cache git make
 
@@ -9,6 +10,7 @@ WORKDIR /app
 # Copy go mod and sum files
 COPY go.mod go.sum ./
 
+RUN go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 # Download all dependencies
 RUN go mod download
 
@@ -18,5 +20,7 @@ COPY . .
 # Build the application
 RUN make build
 
-# Migration tools
-RUN go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
+
+
+

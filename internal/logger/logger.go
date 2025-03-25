@@ -116,7 +116,7 @@ func (hook *ElasticsearchHook) Fire(entry *logrus.Entry) error {
 
 // Levels defines which log levels should be sent to Elasticsearch
 func (hook *ElasticsearchHook) Levels() []logrus.Level {
-	return logrus.AllLevels // Send all levels to Elasticsearch
+	return []logrus.Level{logrus.ErrorLevel, logrus.WarnLevel} // Send warning and error levels to Elasticsearch
 }
 
 // SetUpLogger configures and returns a new logger instance

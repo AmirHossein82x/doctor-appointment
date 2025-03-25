@@ -6,6 +6,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/AmirHossein82x/doctor-appointment/internal/config"
@@ -119,19 +120,27 @@ func (hook *ElasticsearchHook) Levels() []logrus.Level {
 	return []logrus.Level{logrus.ErrorLevel, logrus.WarnLevel} // Send warning and error levels to Elasticsearch
 }
 
-// SetUpLogger configures and returns a new logger instance
+var (
+	once     sync.Once
+	instance *logrus.Logger
+)
+
+// SetUpLogger initializes and returns a singleton logger instance
 func SetUpLogger() *logrus.Logger {
-	config := config.LoadConfig()
-	log := logrus.New()
-	log.SetFormatter(NewCustomFormatter()) // Use the optimized custom formatter
-	log.SetOutput(os.Stdout)
+	once.Do(func() {
+		config := config.LoadConfig()
+		instance = logrus.New()
+		instance.SetFormatter(NewCustomFormatter()) // Use optimized custom formatter
+		instance.SetOutput(os.Stdout)
 
-	esHook, err := NewElasticsearchHook(config.ELASTIC_ADDR, config.ELASTIC_INDEX, config.ELASTIC_USERNAME, config.ELASTIC_PASSWORD)
-	if err != nil {
-		fmt.Printf("Failed to initialize Elasticsearch hook: %v\n", err)
-	} else {
-		log.AddHook(esHook)
-	}
+		// Set up Elasticsearch hook
+		esHook, err := NewElasticsearchHook(config.ELASTIC_ADDR, config.ELASTIC_INDEX, config.ELASTIC_USERNAME, config.ELASTIC_PASSWORD)
+		if err != nil {
+			fmt.Printf("Failed to initialize Elasticsearch hook: %v\n", err)
+		} else {
+			instance.AddHook(esHook)
+		}
+	})
 
-	return log
+	return instance
 }

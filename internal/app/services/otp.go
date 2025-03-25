@@ -22,6 +22,14 @@ func NewOTPService(otpRepo repository.OtpRepoInterface, log *logrus.Logger, smsS
 	return &OTPService{otpRepo: otpRepo, log: log, smsService: smsService}
 }
 
+// Generate OTP
+// @Summary Generate OTP
+// @Description Generates an OTP for phone number verification
+// @Tags OTP
+// @Accept json
+// @Produce json
+// @Param request body dto.OTPRequest true "Phone Number"
+// @Router /otp/generate [post]
 func (o *OTPService) GenerateOTP(c *gin.Context) {
 	o.log.Info("GenerateOTP")
 	var req dto.OTPRequest
@@ -43,10 +51,19 @@ func (o *OTPService) GenerateOTP(c *gin.Context) {
 		return
 	}
 	go o.smsService.SendSMS([]string{req.PhoneNumber}, fmt.Sprintf("Your OTP is: %d", otp))
+	o.log.Info("OTP generated successfully")
 	utils.SuccessResponse(c, "OTP generated successfully", nil)
 
 }
 
+// Verify OTP
+// @Summary Verify OTP
+// @Description Verifies the OTP entered by the user
+// @Tags OTP
+// @Accept json
+// @Produce json
+// @Param request body dto.VerifyOTPRequest true "Phone Number and OTP"
+// @Router /otp/verify [post]
 func (o *OTPService) VerifyOTP(c *gin.Context) {
 	o.log.Info("VerifyOTP")
 	var req dto.VerifyOTPRequest
@@ -73,5 +90,6 @@ func (o *OTPService) VerifyOTP(c *gin.Context) {
 		utils.ErrorResponse(c, 400, "Invalid OTP")
 		return
 	}
+	o.log.Info("OTP verified successfully")
 	utils.SuccessResponse(c, "OTP verified successfully", nil)
 }

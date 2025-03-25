@@ -8,7 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
+// SetUpUserRoutes sets up OTP-related routes.
+// @title Doctor Appointment API
+// @version 1.0
+// @description API for OTP-based authentication in Doctor Appointment system
+// @BasePath /api/v1
 func SetUpUserRoutes(router *gin.RouterGroup) {
 	log := logger.SetUpLogger()
 	log.Info("Setting up OTP routes")
@@ -16,10 +20,8 @@ func SetUpUserRoutes(router *gin.RouterGroup) {
 	SmsService := infrastructure.NewKavenegarSmsService()
 	OtpHandler := services.NewOTPService(otpRep, log, SmsService)
 
-
 	otpRoute := router.Group("/otp")
+
 	otpRoute.POST("/generate", OtpHandler.GenerateOTP)
 	otpRoute.POST("/verify", OtpHandler.VerifyOTP)
-	
-	
 }

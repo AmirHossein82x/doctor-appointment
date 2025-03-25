@@ -1,0 +1,53 @@
+definitions:
+  dto.OTPRequest:
+    properties:
+      phone_number:
+        type: string
+    type: object
+  dto.VerifyOTPRequest:
+    properties:
+      otp_code:
+        type: string
+      phone_number:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /otp/generate:
+    post:
+      consumes:
+      - application/json
+      description: Generates an OTP for phone number verification
+      parameters:
+      - description: Phone Number
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.OTPRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Generate OTP
+      tags:
+      - OTP
+  /otp/verify:
+    post:
+      consumes:
+      - application/json
+      description: Verifies the OTP entered by the user
+      parameters:
+      - description: Phone Number and OTP
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.VerifyOTPRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Verify OTP
+      tags:
+      - OTP
+swagger: "2.0"

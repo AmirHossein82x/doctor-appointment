@@ -102,4 +102,15 @@ paths:
       summary: registering user
       tags:
       - users
+  /users/verify-access-token:
+    post:
+      consumes:
+      - application/json
+      description: verify access token
+      produces:
+      - application/json
+      responses: {}
+      summary: verify access token
+      tags:
+      - users
 swagger: "2.0"

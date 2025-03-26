@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/AmirHossein82x/doctor-appointment/internal/config"
@@ -62,4 +63,26 @@ func GenerateRefreshToken(ID uuid.UUID, Name string, Role string) (string, error
 
 	// Return the generated token and no error
 	return tokenString, nil
+}
+
+func VerifyAccessToken(accessToken string) (*Claims, error) {
+	// Parse the token
+	token, err := jwt.ParseWithClaims(accessToken, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return mySigningKey, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// Extract the claims
+	claims, ok := token.Claims.(*Claims)
+	if !ok {
+		return nil, err
+	}
+
+	if claims.TokenType != "access" {
+		return nil, fmt.Errorf("invalid token type")
+	}
+
+	return claims, nil
 }

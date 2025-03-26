@@ -1,6 +1,7 @@
 package services
 
 import (
+	"strings"
 	"time"
 
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/dto"
@@ -117,4 +118,32 @@ func (u *UserService) Login(c *gin.Context) {
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	})
+}
+
+
+
+
+// verify access token 
+// @Summary verify access token
+// @Description verify access token 
+// @Tags users
+// @Accept json
+// @Produce json
+// @Router /users/verify-access-token [post]
+func (u *UserService) VerifyAccessToken(c *gin.Context){
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		u.log.Error("Empty access token")
+		utils.ErrorResponse(c, 400, "Empty access token")
+		return
+	}
+	// Extract the token from the header (format: "Bearer <token>")
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+	claims, err := utils.VerifyAccessToken(tokenString)
+	if err != nil {
+		u.log.Error("Invalid access token")
+		utils.ErrorResponse(c, 400, "Invalid access token or token has expired")
+		return
+	}
+	utils.SuccessResponse(c, "Valid access token", claims)
 }

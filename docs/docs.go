@@ -122,6 +122,22 @@ const docTemplate = `{
                 ],
                 "responses": {}
             }
+        },
+        "/users/verify-access-token": {
+            "post": {
+                "description": "verify access token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "verify access token",
+                "responses": {}
+            }
         }
     },
     "definitions": {

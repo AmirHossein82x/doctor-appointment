@@ -20,4 +20,5 @@ func SetUpUserRoutes(router *gin.RouterGroup) {
 	userRoute.POST("/register", UserHandler.Register)
 	userRoute.POST("/login", UserHandler.Login)
 	userRoute.POST("/verify-access-token", UserHandler.VerifyAccessToken)
+	userRoute.POST("/get-access-token-by-refresh-token", UserHandler.GetAccessTokenByRefreshToken)
 }

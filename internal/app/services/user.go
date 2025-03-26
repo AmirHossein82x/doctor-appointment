@@ -74,8 +74,6 @@ func (u *UserService) Register(c *gin.Context) {
 
 }
 
-
-
 // Login User
 // @Summary login user
 // @Description login users
@@ -120,17 +118,14 @@ func (u *UserService) Login(c *gin.Context) {
 	})
 }
 
-
-
-
-// verify access token 
+// verify access token
 // @Summary verify access token
-// @Description verify access token 
+// @Description verify access token
 // @Tags users
 // @Accept json
 // @Produce json
 // @Router /users/verify-access-token [post]
-func (u *UserService) VerifyAccessToken(c *gin.Context){
+func (u *UserService) VerifyAccessToken(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
 		u.log.Error("Empty access token")
@@ -146,4 +141,36 @@ func (u *UserService) VerifyAccessToken(c *gin.Context){
 		return
 	}
 	utils.SuccessResponse(c, "Valid access token", claims)
+}
+
+// get access token by refresh token
+// @Summary get access token by refresh token
+// @Description get access token by refresh token
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body dto.RefreshTokenRequest true "Refresh Token"
+// @Router /users/get-access-token-by-refresh-token [post]
+func (u *UserService) GetAccessTokenByRefreshToken(c *gin.Context) {
+	var req dto.RefreshTokenRequest
+	if err := c.BindJSON(&req); err != nil {
+		u.log.Error("Invalid request")
+		utils.ErrorResponse(c, 400, "Invalid request")
+		return
+	}
+	claims, err := utils.VerifyRefreshToken(req.RefreshToken)
+	if err != nil {
+		u.log.Error("Invalid refresh token")
+		utils.ErrorResponse(c, 400, "Invalid refresh token or token has expired")
+		return
+	}
+	accessToken, err := utils.GenerateAccessToken(claims.ID, claims.Name, claims.Role)
+	if err != nil {
+		u.log.Error("can not generate access token")
+		utils.ErrorResponse(c, 500, "can not generate access token")
+		return
+	}
+	utils.SuccessResponse(c, "access token generated successfully", dto.AccessTokenResponse{
+		AccessToken: accessToken,
+	})
 }

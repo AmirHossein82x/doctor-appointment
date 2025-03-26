@@ -86,3 +86,27 @@ func VerifyAccessToken(accessToken string) (*Claims, error) {
 
 	return claims, nil
 }
+
+
+
+func VerifyRefreshToken(accessToken string) (*Claims, error) {
+	// Parse the token
+	token, err := jwt.ParseWithClaims(accessToken, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return mySigningKey, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// Extract the claims
+	claims, ok := token.Claims.(*Claims)
+	if !ok {
+		return nil, err
+	}
+
+	if claims.TokenType != "refresh" {
+		return nil, fmt.Errorf("invalid token type")
+	}
+
+	return claims, nil
+}

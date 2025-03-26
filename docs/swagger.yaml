@@ -4,6 +4,11 @@ definitions:
       phone_number:
         type: string
     type: object
+  dto.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
   dto.UserLoginRequest:
     properties:
       password:
@@ -66,6 +71,24 @@ paths:
       summary: Verify OTP
       tags:
       - OTP
+  /users/get-access-token-by-refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: get access token by refresh token
+      parameters:
+      - description: Refresh Token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: get access token by refresh token
+      tags:
+      - users
   /users/login:
     post:
       consumes:

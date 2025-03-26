@@ -68,6 +68,33 @@ const docTemplate = `{
                 ],
                 "responses": {}
             }
+        },
+        "/users/register": {
+            "post": {
+                "description": "creating users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "registering user",
+                "parameters": [
+                    {
+                        "description": "Phone Number",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserRegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
         }
     },
     "definitions": {
@@ -75,6 +102,20 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UserRegisterRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "verified_token": {
                     "type": "string"
                 }
             }

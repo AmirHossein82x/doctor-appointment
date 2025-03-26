@@ -7,7 +7,7 @@ import (
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/validator"
 	"github.com/AmirHossein82x/doctor-appointment/internal/repository"
 	"github.com/AmirHossein82x/doctor-appointment/internal/sms_sender"
-	"github.com/AmirHossein82x/doctor-appointment/internal/utils"
+	"github.com/AmirHossein82x/doctor-appointment/internal/app/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )

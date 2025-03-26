@@ -4,6 +4,15 @@ definitions:
       phone_number:
         type: string
     type: object
+  dto.UserRegisterRequest:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      verified_token:
+        type: string
+    type: object
   dto.VerifyOTPRequest:
     properties:
       otp_code:
@@ -50,4 +59,22 @@ paths:
       summary: Verify OTP
       tags:
       - OTP
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: creating users
+      parameters:
+      - description: Phone Number
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserRegisterRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: registering user
+      tags:
+      - users
 swagger: "2.0"

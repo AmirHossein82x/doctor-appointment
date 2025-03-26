@@ -65,9 +65,9 @@ func GenerateRefreshToken(ID uuid.UUID, Name string, Role string) (string, error
 	return tokenString, nil
 }
 
-func VerifyAccessToken(accessToken string) (*Claims, error) {
+func VerifyToken(Token string, TokenType string) (*Claims, error) {
 	// Parse the token
-	token, err := jwt.ParseWithClaims(accessToken, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(Token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return mySigningKey, nil
 	})
 	if err != nil {
@@ -80,31 +80,7 @@ func VerifyAccessToken(accessToken string) (*Claims, error) {
 		return nil, err
 	}
 
-	if claims.TokenType != "access" {
-		return nil, fmt.Errorf("invalid token type")
-	}
-
-	return claims, nil
-}
-
-
-
-func VerifyRefreshToken(accessToken string) (*Claims, error) {
-	// Parse the token
-	token, err := jwt.ParseWithClaims(accessToken, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return mySigningKey, nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	// Extract the claims
-	claims, ok := token.Claims.(*Claims)
-	if !ok {
-		return nil, err
-	}
-
-	if claims.TokenType != "refresh" {
+	if claims.TokenType != TokenType {
 		return nil, fmt.Errorf("invalid token type")
 	}
 

@@ -134,7 +134,7 @@ func (u *UserService) VerifyAccessToken(c *gin.Context) {
 	}
 	// Extract the token from the header (format: "Bearer <token>")
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-	claims, err := utils.VerifyAccessToken(tokenString)
+	claims, err := utils.VerifyToken(tokenString, "access")
 	if err != nil {
 		u.log.Error("Invalid access token")
 		utils.ErrorResponse(c, 400, "Invalid access token or token has expired")
@@ -158,7 +158,7 @@ func (u *UserService) GetAccessTokenByRefreshToken(c *gin.Context) {
 		utils.ErrorResponse(c, 400, "Invalid request")
 		return
 	}
-	claims, err := utils.VerifyRefreshToken(req.RefreshToken)
+	claims, err := utils.VerifyToken(req.RefreshToken, "refresh")
 	if err != nil {
 		u.log.Error("Invalid refresh token")
 		utils.ErrorResponse(c, 400, "Invalid refresh token or token has expired")

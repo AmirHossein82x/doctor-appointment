@@ -23,6 +23,7 @@ type Config struct {
 	ELASTIC_INDEX     string
 	KAVENEGAR_API_KEY string
 	KAVENEGAR_SENDER  string
+	SECRET_KEY        string
 }
 
 // Singleton instance and mutex to make it thread-safe
@@ -54,6 +55,7 @@ func LoadConfig() *Config {
 			ELASTIC_INDEX:     getEnv("ELASTIC_INDEX", "default"),
 			KAVENEGAR_API_KEY: getEnv("KAVENEGAR_API_KEY", "default"),
 			KAVENEGAR_SENDER:  getEnv("KAVENEGAR_SENDER", "default"),
+			SECRET_KEY:        getEnv("SECRET_KEY", "default"),
 		}
 	})
 

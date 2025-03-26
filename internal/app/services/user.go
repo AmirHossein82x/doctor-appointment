@@ -72,3 +72,49 @@ func (u *UserService) Register(c *gin.Context) {
 	})
 
 }
+
+
+
+// Login User
+// @Summary login user
+// @Description login users
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body dto.UserLoginRequest true "Phone Number"
+// @Router /users/login [post]
+func (u *UserService) Login(c *gin.Context) {
+	var req dto.UserLoginRequest
+	if err := c.BindJSON(&req); err != nil {
+		u.log.Error("Invalid request")
+		utils.ErrorResponse(c, 400, "Invalid request")
+		return
+	}
+	user, err := u.userRepo.GetByPhoneNumber(req.PhoneNumber)
+	if err != nil {
+		u.log.Error("user not found")
+		utils.ErrorResponse(c, 404, "user not found")
+		return
+	}
+	if !utils.VerifyPassword(req.Password, user.Password) {
+		u.log.Error("invalid password")
+		utils.ErrorResponse(c, 400, "invalid password")
+		return
+	}
+	accessToken, err := utils.GenerateAccessToken(user.ID, user.Name, user.Role)
+	if err != nil {
+		u.log.Error("can not generate access token")
+		utils.ErrorResponse(c, 500, "can not generate access token")
+		return
+	}
+	refreshToken, err := utils.GenerateRefreshToken(user.ID, user.Name, user.Role)
+	if err != nil {
+		u.log.Error("can not generate refresh token")
+		utils.ErrorResponse(c, 500, "can not generate refresh token")
+		return
+	}
+	utils.SuccessResponse(c, "login successfully", dto.UserLoginResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	})
+}

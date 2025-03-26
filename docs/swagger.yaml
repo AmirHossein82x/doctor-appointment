@@ -4,6 +4,13 @@ definitions:
       phone_number:
         type: string
     type: object
+  dto.UserLoginRequest:
+    properties:
+      password:
+        type: string
+      phone_number:
+        type: string
+    type: object
   dto.UserRegisterRequest:
     properties:
       name:
@@ -59,6 +66,24 @@ paths:
       summary: Verify OTP
       tags:
       - OTP
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: login users
+      parameters:
+      - description: Phone Number
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLoginRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: login user
+      tags:
+      - users
   /users/register:
     post:
       consumes:

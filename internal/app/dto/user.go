@@ -15,3 +15,13 @@ type UserRegisterResponse struct {
 	Role        string    `json:"role"`
 	CreatedAt   string    `json:"created_at"`
 }
+
+type UserLoginRequest struct {
+	PhoneNumber string `json:"phone_number"`
+	Password    string `json:"password"`
+}
+
+type UserLoginResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}

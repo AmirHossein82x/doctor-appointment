@@ -69,6 +69,33 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/users/login": {
+            "post": {
+                "description": "login users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "login user",
+                "parameters": [
+                    {
+                        "description": "Phone Number",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserLoginRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/users/register": {
             "post": {
                 "description": "creating users",
@@ -101,6 +128,17 @@ const docTemplate = `{
         "dto.OTPRequest": {
             "type": "object",
             "properties": {
+                "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UserLoginRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
                 "phone_number": {
                     "type": "string"
                 }

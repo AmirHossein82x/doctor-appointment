@@ -14,6 +14,7 @@ import (
 type UserRepoInterface interface {
 	Register(*domain.User) error
 	GetPhoneNumberFromToken(string) (string, error)
+	GetByPhoneNumber(string) (*domain.User, error)
 }
 
 type UserRepository struct {
@@ -43,4 +44,14 @@ func (u *UserRepository) Register(user *domain.User) error{
 	err := u.DB.Create(user).Error
 	return err
 
+}
+
+
+func (u *UserRepository) GetByPhoneNumber(phone string) (*domain.User, error) {
+	var user domain.User
+	err := u.DB.Where("phone = ?", phone).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }

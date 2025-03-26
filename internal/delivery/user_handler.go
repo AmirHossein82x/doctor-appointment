@@ -18,4 +18,5 @@ func SetUpUserRoutes(router *gin.RouterGroup) {
 
 	userRoute := router.Group("/users")
 	userRoute.POST("/register", UserHandler.Register)
+	userRoute.POST("/login", UserHandler.Login)
 }

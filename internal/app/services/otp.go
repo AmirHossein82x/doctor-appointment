@@ -91,5 +91,11 @@ func (o *OTPService) VerifyOTP(c *gin.Context) {
 		return
 	}
 	o.log.Info("OTP verified successfully")
-	utils.SuccessResponse(c, "OTP verified successfully", nil)
+	token, err := o.otpRepo.GenerateVerifyOtpToken(req.PhoneNumber)
+	if err != nil {
+		o.log.Error("can not generate verified token")
+		utils.ErrorResponse(c, 500, "can not generate verified token")
+		return
+	}
+	utils.SuccessResponse(c, "OTP verified successfully", gin.H{"verified_token": token})
 }

@@ -1,7 +1,19 @@
 definitions:
+  dto.ForgetPasswordRequest:
+    properties:
+      phone_number:
+        type: string
+    type: object
   dto.OTPRequest:
     properties:
       phone_number:
+        type: string
+    type: object
+  dto.PasswordResetRequest:
+    properties:
+      password:
+        type: string
+      password_retype:
         type: string
     type: object
   dto.RefreshTokenRequest:
@@ -71,6 +83,24 @@ paths:
       summary: Verify OTP
       tags:
       - OTP
+  /users/forget-password:
+    post:
+      consumes:
+      - application/json
+      description: get forget password
+      parameters:
+      - description: Phone number
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ForgetPasswordRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: get forget password
+      tags:
+      - users
   /users/get-access-token-by-refresh-token:
     post:
       consumes:
@@ -123,6 +153,29 @@ paths:
       - application/json
       responses: {}
       summary: registering user
+      tags:
+      - users
+  /users/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: get reset password
+      parameters:
+      - description: password and password_retype
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PasswordResetRequest'
+      - description: The encrypted key for password reset
+        in: query
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: get reset password
       tags:
       - users
   /users/verify-access-token:

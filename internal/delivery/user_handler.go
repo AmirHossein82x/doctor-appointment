@@ -21,4 +21,6 @@ func SetUpUserRoutes(router *gin.RouterGroup) {
 	userRoute.POST("/login", UserHandler.Login)
 	userRoute.POST("/verify-access-token", UserHandler.VerifyAccessToken)
 	userRoute.POST("/get-access-token-by-refresh-token", UserHandler.GetAccessTokenByRefreshToken)
+	userRoute.POST("/forget-password", UserHandler.ForgetPassword)
+	userRoute.POST("/reset-password", UserHandler.ResetPassword)
 }

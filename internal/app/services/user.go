@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/AmirHossein82x/doctor-appointment/internal/repository"
 	"github.com/AmirHossein82x/doctor-appointment/internal/sms_sender"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 )
 
@@ -187,4 +189,121 @@ func (u *UserService) GetAccessTokenByRefreshToken(c *gin.Context) {
 	utils.SuccessResponse(c, "access token generated successfully", dto.AccessTokenResponse{
 		AccessToken: accessToken,
 	})
+}
+
+// get forget password
+// @Summary get forget password
+// @Description get forget password
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body dto.ForgetPasswordRequest true "Phone number"
+// @Router /users/forget-password [post]
+func (u *UserService) ForgetPassword(c *gin.Context) {
+	var req dto.ForgetPasswordRequest
+	if err := c.BindJSON(&req); err != nil {
+		u.log.Error("Invalid request")
+		utils.ErrorResponse(c, 400, "Invalid request")
+		return
+
+	}
+	user, err := u.userRepo.GetByPhoneNumber(req.PhoneNumber)
+	if err != nil {
+		u.log.Error("user not found")
+		utils.ErrorResponse(c, 404, "user not found")
+		return
+	}
+
+	// Encrypt UUID
+	encryptedUUID, err := utils.EncryptUUID(user.ID)
+	if err != nil {
+		u.log.Error(err.Error())
+		utils.ErrorResponse(c, 500, "internal server error")
+		return
+	}
+	err = u.userRepo.SaveEncryptionKeyToRedis(encryptedUUID)
+	if err != nil {
+		u.log.Error(err.Error())
+		utils.ErrorResponse(c, 500, "internal server error")
+		return
+	}
+	// Generate password reset link
+	resetLink := fmt.Sprintf("http://127.0.0.1:8080/forget-password?key=%s", encryptedUUID)
+	go u.smsService.SendSMS([]string{req.PhoneNumber}, resetLink)
+	utils.SuccessResponse(c, "reset password has send to you", nil)
+
+}
+
+// get reset password
+// @Summary get reset password
+// @Description get reset password
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body dto.PasswordResetRequest true "password and password_retype"
+// @Param key query string true "The encrypted key for password reset"
+// @Router /users/reset-password [post]
+func (u *UserService) ResetPassword(c *gin.Context) {
+	encryptionKey := c.Query("key")
+	var req dto.PasswordResetRequest
+	if encryptionKey == "" {
+		u.log.Error("bad request")
+		utils.ErrorResponse(c, 400, "bad request")
+		return
+
+	}
+	exists := u.userRepo.ExistsEncryptionKey(encryptionKey)
+	if !exists {
+		u.log.Error("your key is invalid or expired")
+		utils.ErrorResponse(c, 400, "your key is invalid or expired")
+		return
+	}
+	if err := c.BindJSON(&req); err != nil {
+		u.log.Error("Invalid request")
+		utils.ErrorResponse(c, 400, "Invalid request")
+		return
+
+	}
+	if req.Password != req.PasswordRetype {
+		u.log.Error("password and password retype are not matched")
+		utils.ErrorResponse(c, 500, "password and password retype are not matched")
+		return
+	}
+
+	userIdString, err := utils.DecryptUUID(encryptionKey)
+	if err != nil {
+		u.log.Error("can not decrypt key")
+		utils.ErrorResponse(c, 500, "can not decrypt key")
+		return
+
+	}
+	userId, err := uuid.Parse(userIdString)
+	if err != nil {
+		u.log.Error("can not prase user id to uuid")
+		utils.ErrorResponse(c, 500, "can not prase user id to uuid")
+		return
+
+	}
+	hashedPassword, err := utils.HashPassword(req.Password)
+	if err != nil {
+		u.log.Error("can not hash password")
+		utils.ErrorResponse(c, 500, "can not hash password")
+		return
+
+	}
+	err = u.userRepo.UpdatePassword(userId, hashedPassword)
+
+	if err != nil {
+		u.log.Error("can not change the password")
+		utils.ErrorResponse(c, 500, err.Error())
+		return
+	}
+	err = u.userRepo.DeleteEncryptionKey(encryptionKey)
+	if err != nil {
+		u.log.Error("internal server error")
+		utils.ErrorResponse(c, 500, "internal server error")
+		return
+	}
+	utils.SuccessResponse(c, "password changes success fully", nil)
+
 }

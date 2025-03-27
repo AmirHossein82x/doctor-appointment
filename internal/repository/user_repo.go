@@ -7,6 +7,7 @@ import (
 
 	"github.com/AmirHossein82x/doctor-appointment/internal/domain"
 	"github.com/AmirHossein82x/doctor-appointment/internal/infrastructure"
+	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
@@ -15,6 +16,10 @@ type UserRepoInterface interface {
 	Register(*domain.User) error
 	GetPhoneNumberFromToken(string) (string, error)
 	GetByPhoneNumber(string) (*domain.User, error)
+	UpdatePassword(uuid.UUID, string) error
+	SaveEncryptionKeyToRedis(string) error
+	ExistsEncryptionKey(string) bool
+	DeleteEncryptionKey(string) error
 }
 
 type UserRepository struct {
@@ -40,12 +45,11 @@ func (u *UserRepository) GetPhoneNumberFromToken(token string) (string, error) {
 	return phoneNumber, nil
 }
 
-func (u *UserRepository) Register(user *domain.User) error{
+func (u *UserRepository) Register(user *domain.User) error {
 	err := u.DB.Create(user).Error
 	return err
 
 }
-
 
 func (u *UserRepository) GetByPhoneNumber(phone string) (*domain.User, error) {
 	var user domain.User
@@ -54,4 +58,39 @@ func (u *UserRepository) GetByPhoneNumber(phone string) (*domain.User, error) {
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (u *UserRepository) UpdatePassword(id uuid.UUID, Password string) error {
+	err := u.DB.Model(&domain.User{}).Where("id = ?", id).Update("password", Password).Error
+	return err
+}
+
+func (u *UserRepository) SaveEncryptionKeyToRedis(encryptionKey string) error {
+	// Create a context with timeout to prevent long-running Redis operations
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	// Store OTP in Redis with expiration time of 5 minutes
+	err := u.redisClient.Set(ctx, encryptionKey, true, 5*time.Minute).Err()
+	return err
+}
+
+
+func (u *UserRepository) ExistsEncryptionKey(encryptionKey string) bool {
+	// Create a context with timeout to prevent long-running Redis operations
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	_, err := u.redisClient.Get(ctx, encryptionKey).Result()
+	return err == nil
+}
+
+
+func (u *UserRepository) DeleteEncryptionKey(encryptionKey string) error {
+	// Create a context with timeout to prevent long-running Redis operations
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	// Use Redis Del command to delete the key
+	_, err := u.redisClient.Del(ctx, encryptionKey).Result()
+	return err
 }

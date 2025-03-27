@@ -69,6 +69,33 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/users/forget-password": {
+            "post": {
+                "description": "get forget password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "get forget password",
+                "parameters": [
+                    {
+                        "description": "Phone number",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ForgetPasswordRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/users/get-access-token-by-refresh-token": {
             "post": {
                 "description": "get access token by refresh token",
@@ -150,6 +177,40 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/users/reset-password": {
+            "post": {
+                "description": "get reset password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "get reset password",
+                "parameters": [
+                    {
+                        "description": "password and password_retype",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PasswordResetRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "The encrypted key for password reset",
+                        "name": "key",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/users/verify-access-token": {
             "post": {
                 "description": "verify access token",
@@ -168,10 +229,29 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.ForgetPasswordRequest": {
+            "type": "object",
+            "properties": {
+                "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.OTPRequest": {
             "type": "object",
             "properties": {
                 "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PasswordResetRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "password_retype": {
                     "type": "string"
                 }
             }

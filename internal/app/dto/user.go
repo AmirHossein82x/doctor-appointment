@@ -35,3 +35,12 @@ type RefreshTokenRequest struct {
 type AccessTokenResponse struct {
 	AccessToken string `json:"access_token"`
 }
+
+type ForgetPasswordRequest struct {
+	PhoneNumber string `json:"phone_number"`
+}
+
+type PasswordResetRequest struct {
+	Password       string `json:"password"`
+	PasswordRetype string `json:"password_retype"`
+}

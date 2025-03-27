@@ -63,13 +63,27 @@ func (u *UserService) Register(c *gin.Context) {
 		return
 	}
 	go u.smsService.SendSMS([]string{phoneNumber}, "welcome to our website")
+	accessToken, err := utils.GenerateAccessToken(user.ID, user.Name, user.Role)
+	if err != nil {
+		u.log.Error("can not generate access token")
+		utils.ErrorResponse(c, 500, "can not generate access token")
+		return
+	}
+	refreshToken, err := utils.GenerateRefreshToken(user.ID, user.Name, user.Role)
+	if err != nil {
+		u.log.Error("can not generate refresh token")
+		utils.ErrorResponse(c, 500, "can not generate refresh token")
+		return
+	}
 	u.log.Info("user register successfully")
 	utils.SuccessResponse(c, "user register successfully", dto.UserRegisterResponse{
-		ID:          user.ID,
-		Name:        user.Name,
-		PhoneNumber: user.Phone,
-		Role:        user.Role,
-		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
+		ID:           user.ID,
+		Name:         user.Name,
+		PhoneNumber:  user.Phone,
+		Role:         user.Role,
+		CreatedAt:    user.CreatedAt.Format(time.RFC3339),
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	})
 
 }

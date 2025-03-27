@@ -9,11 +9,13 @@ type UserRegisterRequest struct {
 }
 
 type UserRegisterResponse struct {
-	ID          uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
-	PhoneNumber string    `json:"phone_number"`
-	Role        string    `json:"role"`
-	CreatedAt   string    `json:"created_at"`
+	ID           uuid.UUID `json:"id"`
+	Name         string    `json:"name"`
+	PhoneNumber  string    `json:"phone_number"`
+	Role         string    `json:"role"`
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
+	CreatedAt    string    `json:"created_at"`
 }
 
 type UserLoginRequest struct {

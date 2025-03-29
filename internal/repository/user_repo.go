@@ -12,16 +12,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserRepoInterface interface {
-	Register(*domain.User) error
-	GetPhoneNumberFromToken(string) (string, error)
-	GetByPhoneNumber(string) (*domain.User, error)
-	UpdatePassword(uuid.UUID, string) error
-	SaveEncryptionKeyToRedis(string) error
-	ExistsEncryptionKey(string) bool
-	DeleteEncryptionKey(string) error
-}
-
 type UserRepository struct {
 	redisClient *redis.Client
 	DB          *gorm.DB
@@ -75,7 +65,6 @@ func (u *UserRepository) SaveEncryptionKeyToRedis(encryptionKey string) error {
 	return err
 }
 
-
 func (u *UserRepository) ExistsEncryptionKey(encryptionKey string) bool {
 	// Create a context with timeout to prevent long-running Redis operations
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -83,7 +72,6 @@ func (u *UserRepository) ExistsEncryptionKey(encryptionKey string) bool {
 	_, err := u.redisClient.Get(ctx, encryptionKey).Result()
 	return err == nil
 }
-
 
 func (u *UserRepository) DeleteEncryptionKey(encryptionKey string) error {
 	// Create a context with timeout to prevent long-running Redis operations

@@ -10,20 +10,14 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type OtpRepoInterface interface {
-	GenerateOTP(PhoneNumber string) (int, error)
-	VerifyOTP(PhoneNumber string, otp string) (bool, error)
-	GenerateVerifyOtpToken(PhoneNumber string) (string,error)
-}
-
-type OtpRepo struct {
+type OtpRepository struct {
 	redisClient *redis.Client
 }
 
-func NewOtpRepo(redisClient *redis.Client) *OtpRepo {
-	return &OtpRepo{redisClient: redisClient}
+func NewOtpRepo(redisClient *redis.Client) *OtpRepository {
+	return &OtpRepository{redisClient: redisClient}
 }
-func (o *OtpRepo) GenerateOTP(phoneNumber string) (int, error) {
+func (o *OtpRepository) GenerateOTP(phoneNumber string) (int, error) {
 	// Create a context with timeout to prevent long-running Redis operations
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -40,7 +34,7 @@ func (o *OtpRepo) GenerateOTP(phoneNumber string) (int, error) {
 	return otp, nil
 }
 
-func (o *OtpRepo) VerifyOTP(PhoneNumber string, otp string) (bool, error) {
+func (o *OtpRepository) VerifyOTP(PhoneNumber string, otp string) (bool, error) {
 	// Create a context with timeout to prevent long-running Redis operations
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -59,8 +53,7 @@ func (o *OtpRepo) VerifyOTP(PhoneNumber string, otp string) (bool, error) {
 	return false, nil
 }
 
-
-func (o *OtpRepo) GenerateVerifyOtpToken(PhoneNumber string) (string, error) {
+func (o *OtpRepository) GenerateVerifyOtpToken(PhoneNumber string) (string, error) {
 	// Create a context with timeout to prevent long-running Redis operations
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -70,6 +63,5 @@ func (o *OtpRepo) GenerateVerifyOtpToken(PhoneNumber string) (string, error) {
 		return "", fmt.Errorf("failed to store verified token in Redis: %w", err)
 	}
 	return verifiedToken, nil
-
 
 }

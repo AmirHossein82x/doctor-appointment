@@ -5,23 +5,23 @@ import (
 	"strings"
 	"time"
 
+	"github.com/AmirHossein82x/doctor-appointment/internal/app/constants"
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/dto"
+	"github.com/AmirHossein82x/doctor-appointment/internal/app/ports"
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/utils"
 	"github.com/AmirHossein82x/doctor-appointment/internal/domain"
-	"github.com/AmirHossein82x/doctor-appointment/internal/repository"
-	"github.com/AmirHossein82x/doctor-appointment/internal/sms_sender"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 )
 
 type UserService struct {
-	userRepo   repository.UserRepoInterface
+	userRepo   ports.UserRepository
 	log        *logrus.Logger
-	smsService sms_sender.SmsService
+	smsService ports.SmsService
 }
 
-func NewUserService(userRepo repository.UserRepoInterface, log *logrus.Logger, smsService sms_sender.SmsService) *UserService {
+func NewUserService(userRepo ports.UserRepository, log *logrus.Logger, smsService ports.SmsService) *UserService {
 	return &UserService{userRepo: userRepo, log: log, smsService: smsService}
 }
 
@@ -65,13 +65,13 @@ func (u *UserService) Register(c *gin.Context) {
 		return
 	}
 	go u.smsService.SendSMS([]string{phoneNumber}, "welcome to our website")
-	accessToken, err := utils.GenerateAccessToken(user.ID, user.Name, user.Role)
+	accessToken, err := utils.GenerateToken(user.ID, user.Name, user.Role, constants.TokenTypeAccess)
 	if err != nil {
 		u.log.Error("can not generate access token")
 		utils.ErrorResponse(c, 500, "can not generate access token")
 		return
 	}
-	refreshToken, err := utils.GenerateRefreshToken(user.ID, user.Name, user.Role)
+	refreshToken, err := utils.GenerateToken(user.ID, user.Name, user.Role, constants.TokenTypeRefresh)
 	if err != nil {
 		u.log.Error("can not generate refresh token")
 		utils.ErrorResponse(c, 500, "can not generate refresh token")
@@ -116,13 +116,13 @@ func (u *UserService) Login(c *gin.Context) {
 		utils.ErrorResponse(c, 400, "invalid password")
 		return
 	}
-	accessToken, err := utils.GenerateAccessToken(user.ID, user.Name, user.Role)
+	accessToken, err := utils.GenerateToken(user.ID, user.Name, user.Role, constants.TokenTypeAccess)
 	if err != nil {
 		u.log.Error("can not generate access token")
 		utils.ErrorResponse(c, 500, "can not generate access token")
 		return
 	}
-	refreshToken, err := utils.GenerateRefreshToken(user.ID, user.Name, user.Role)
+	refreshToken, err := utils.GenerateToken(user.ID, user.Name, user.Role, constants.TokenTypeRefresh)
 	if err != nil {
 		u.log.Error("can not generate refresh token")
 		utils.ErrorResponse(c, 500, "can not generate refresh token")
@@ -150,7 +150,7 @@ func (u *UserService) VerifyAccessToken(c *gin.Context) {
 	}
 	// Extract the token from the header (format: "Bearer <token>")
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-	claims, err := utils.VerifyToken(tokenString, "access")
+	claims, err := utils.VerifyToken(tokenString, constants.TokenTypeAccess)
 	if err != nil {
 		u.log.Error("Invalid access token")
 		utils.ErrorResponse(c, 400, "Invalid access token or token has expired")
@@ -174,13 +174,13 @@ func (u *UserService) GetAccessTokenByRefreshToken(c *gin.Context) {
 		utils.ErrorResponse(c, 400, "Invalid request")
 		return
 	}
-	claims, err := utils.VerifyToken(req.RefreshToken, "refresh")
+	claims, err := utils.VerifyToken(req.RefreshToken, constants.TokenTypeRefresh)
 	if err != nil {
 		u.log.Error("Invalid refresh token")
 		utils.ErrorResponse(c, 400, "Invalid refresh token or token has expired")
 		return
 	}
-	accessToken, err := utils.GenerateAccessToken(claims.ID, claims.Name, claims.Role)
+	accessToken, err := utils.GenerateToken(claims.ID, claims.Name, claims.Role, constants.TokenTypeAccess)
 	if err != nil {
 		u.log.Error("can not generate access token")
 		utils.ErrorResponse(c, 500, "can not generate access token")

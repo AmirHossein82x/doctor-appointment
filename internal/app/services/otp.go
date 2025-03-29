@@ -4,21 +4,20 @@ import (
 	"fmt"
 
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/dto"
-	"github.com/AmirHossein82x/doctor-appointment/internal/app/validator"
-	"github.com/AmirHossein82x/doctor-appointment/internal/repository"
-	"github.com/AmirHossein82x/doctor-appointment/internal/sms_sender"
+	"github.com/AmirHossein82x/doctor-appointment/internal/app/ports"
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/utils"
+	"github.com/AmirHossein82x/doctor-appointment/internal/app/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
 type OTPService struct {
-	otpRepo    repository.OtpRepoInterface
+	otpRepo    ports.OtpRepository
 	log        *logrus.Logger
-	smsService sms_sender.SmsService
+	smsService ports.SmsService
 }
 
-func NewOTPService(otpRepo repository.OtpRepoInterface, log *logrus.Logger, smsService sms_sender.SmsService) *OTPService {
+func NewOTPService(otpRepo ports.OtpRepository, log *logrus.Logger, smsService ports.SmsService) *OTPService {
 	return &OTPService{otpRepo: otpRepo, log: log, smsService: smsService}
 }
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/AmirHossein82x/doctor-appointment/internal/app/constants"
 	"github.com/AmirHossein82x/doctor-appointment/internal/config"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -14,24 +15,37 @@ var mySigningKey = []byte(cfg.SECRET_KEY)
 
 // Create a struct to represent the claims
 type Claims struct {
-	ID        uuid.UUID `json:"id"`
-	Name      string    `json:"name"`
-	Role      string    `json:"role"`
-	TokenType string    `json:"token_type"`
+	ID        uuid.UUID           `json:"id"`
+	Name      string              `json:"name"`
+	Role      string              `json:"role"`
+	TokenType constants.TokenType `json:"token_type"`
 	jwt.RegisteredClaims
 }
 
-func GenerateAccessToken(ID uuid.UUID, Name string, Role string) (string, error) {
+func GenerateToken(ID uuid.UUID, Name string, Role string, TokenType constants.TokenType) (string, error) {
 	// Create a new token
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
-		ID:        ID,
-		Name:      Name,
-		Role:      Role,
-		TokenType: "access",
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(30 * time.Minute)), // Token expires in 30 minutes
-		},
-	})
+	var token *jwt.Token
+	if TokenType == constants.TokenTypeAccess {
+		token = jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
+			ID:        ID,
+			Name:      Name,
+			Role:      Role,
+			TokenType: constants.TokenTypeAccess,
+			RegisteredClaims: jwt.RegisteredClaims{
+				ExpiresAt: jwt.NewNumericDate(time.Now().Add(constants.AccessTokenLifetime)),
+			},
+		})
+	} else {
+		token = jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
+			ID:        ID,
+			Name:      Name,
+			Role:      Role,
+			TokenType: constants.TokenTypeRefresh,
+			RegisteredClaims: jwt.RegisteredClaims{
+				ExpiresAt: jwt.NewNumericDate(time.Now().Add(constants.RefreshTokenLifetime)),
+			},
+		})
+	}
 
 	// Sign the token with our secret
 	tokenString, err := token.SignedString(mySigningKey)
@@ -43,29 +57,7 @@ func GenerateAccessToken(ID uuid.UUID, Name string, Role string) (string, error)
 	return tokenString, nil
 }
 
-func GenerateRefreshToken(ID uuid.UUID, Name string, Role string) (string, error) {
-	// Create a new token
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
-		ID:        ID,
-		Name:      Name,
-		Role:      Role,
-		TokenType: "refresh",
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)), // Token expires in 1 day
-		},
-	})
-
-	// Sign the token with our secret
-	tokenString, err := token.SignedString(mySigningKey)
-	if err != nil {
-		return "", err // Return an empty string and the error
-	}
-
-	// Return the generated token and no error
-	return tokenString, nil
-}
-
-func VerifyToken(Token string, TokenType string) (*Claims, error) {
+func VerifyToken(Token string, TokenType constants.TokenType) (*Claims, error) {
 	// Parse the token
 	token, err := jwt.ParseWithClaims(Token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return mySigningKey, nil

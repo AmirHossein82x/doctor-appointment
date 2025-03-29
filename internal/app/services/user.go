@@ -9,6 +9,7 @@ import (
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/dto"
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/ports"
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/utils"
+	"github.com/AmirHossein82x/doctor-appointment/internal/app/validator"
 	"github.com/AmirHossein82x/doctor-appointment/internal/domain"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -47,6 +48,12 @@ func (u *UserService) Register(c *gin.Context) {
 		utils.ErrorResponse(c, 400, "can not retrieve phone number from token")
 		return
 
+	}
+	err = validator.ValidatePassword(req.Password)
+	if err != nil {
+		u.log.Error(err.Error())
+		utils.ErrorResponse(c, 400, err.Error())
+		return
 	}
 	passwordHash, err := utils.HashPassword(req.Password)
 	if err != nil {
@@ -283,6 +290,12 @@ func (u *UserService) ResetPassword(c *gin.Context) {
 		utils.ErrorResponse(c, 500, "can not prase user id to uuid")
 		return
 
+	}
+	err = validator.ValidatePassword(req.Password)
+	if err != nil {
+		u.log.Error(err.Error())
+		utils.ErrorResponse(c, 400, err.Error())
+		return
 	}
 	hashedPassword, err := utils.HashPassword(req.Password)
 	if err != nil {

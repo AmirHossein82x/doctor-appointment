@@ -12,16 +12,16 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserRepository struct {
+type AuthRepository struct {
 	redisClient *redis.Client
 	DB          *gorm.DB
 }
 
-func NewUserRepository(redisClient *redis.Client) *UserRepository {
-	return &UserRepository{redisClient: redisClient, DB: infrastructure.DB}
+func NewAuthRepository(redisClient *redis.Client) *AuthRepository {
+	return &AuthRepository{redisClient: redisClient, DB: infrastructure.DB}
 }
 
-func (u *UserRepository) GetPhoneNumberFromToken(token string) (string, error) {
+func (u *AuthRepository) GetPhoneNumberFromToken(token string) (string, error) {
 	// Create a context with timeout to prevent long-running Redis operations
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -35,24 +35,24 @@ func (u *UserRepository) GetPhoneNumberFromToken(token string) (string, error) {
 	return phoneNumber, nil
 }
 
-func (u *UserRepository) Register(user *domain.User) error {
+func (u *AuthRepository) Register(user *domain.User) error {
 	err := u.DB.Create(user).Error
 	return err
 
 }
 
-func (u *UserRepository) GetByPhoneNumber(phone string) (*domain.User, error) {
+func (u *AuthRepository) GetByPhoneNumber(phone string) (*domain.User, error) {
 	var user domain.User
 	err := u.DB.Where("phone = ?", phone).First(&user).Error
 	return &user, err
 }
 
-func (u *UserRepository) UpdatePassword(id uuid.UUID, Password string) error {
+func (u *AuthRepository) UpdatePassword(id uuid.UUID, Password string) error {
 	err := u.DB.Model(&domain.User{}).Where("id = ?", id).Update("password", Password).Error
 	return err
 }
 
-func (u *UserRepository) SaveEncryptionKeyToRedis(encryptionKey string) error {
+func (u *AuthRepository) SaveEncryptionKeyToRedis(encryptionKey string) error {
 	// Create a context with timeout to prevent long-running Redis operations
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -62,7 +62,7 @@ func (u *UserRepository) SaveEncryptionKeyToRedis(encryptionKey string) error {
 	return err
 }
 
-func (u *UserRepository) ExistsEncryptionKey(encryptionKey string) bool {
+func (u *AuthRepository) ExistsEncryptionKey(encryptionKey string) bool {
 	// Create a context with timeout to prevent long-running Redis operations
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -70,7 +70,7 @@ func (u *UserRepository) ExistsEncryptionKey(encryptionKey string) bool {
 	return err == nil
 }
 
-func (u *UserRepository) DeleteEncryptionKey(encryptionKey string) error {
+func (u *AuthRepository) DeleteEncryptionKey(encryptionKey string) error {
 	// Create a context with timeout to prevent long-running Redis operations
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()

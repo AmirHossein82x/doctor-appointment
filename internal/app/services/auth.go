@@ -16,25 +16,25 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type UserService struct {
+type AuthService struct {
 	userRepo   ports.UserRepository
 	log        *logrus.Logger
 	smsService ports.SmsService
 }
 
-func NewUserService(userRepo ports.UserRepository, log *logrus.Logger, smsService ports.SmsService) *UserService {
-	return &UserService{userRepo: userRepo, log: log, smsService: smsService}
+func NewAuthService(userRepo ports.UserRepository, log *logrus.Logger, smsService ports.SmsService) *AuthService {
+	return &AuthService{userRepo: userRepo, log: log, smsService: smsService}
 }
 
 // Register User
 // @Summary registering user
 // @Description creating users
-// @Tags users
+// @Tags auth
 // @Accept json
 // @Produce json
 // @Param request body dto.UserRegisterRequest true "Phone Number"
-// @Router /users/register [post]
-func (u *UserService) Register(c *gin.Context) {
+// @Router /auth/register [post]
+func (u *AuthService) Register(c *gin.Context) {
 	var req dto.UserRegisterRequest
 	if err := c.BindJSON(&req); err != nil {
 		u.log.Error("Invalid request")
@@ -100,12 +100,12 @@ func (u *UserService) Register(c *gin.Context) {
 // Login User
 // @Summary login user
 // @Description login users
-// @Tags users
+// @Tags auth
 // @Accept json
 // @Produce json
 // @Param request body dto.UserLoginRequest true "Phone Number"
-// @Router /users/login [post]
-func (u *UserService) Login(c *gin.Context) {
+// @Router /auth/login [post]
+func (u *AuthService) Login(c *gin.Context) {
 	var req dto.UserLoginRequest
 	if err := c.BindJSON(&req); err != nil {
 		u.log.Error("Invalid request")
@@ -144,11 +144,11 @@ func (u *UserService) Login(c *gin.Context) {
 // verify access token
 // @Summary verify access token
 // @Description verify access token
-// @Tags users
+// @Tags auth
 // @Accept json
 // @Produce json
-// @Router /users/verify-access-token [post]
-func (u *UserService) VerifyAccessToken(c *gin.Context) {
+// @Router /auth/verify-access-token [post]
+func (u *AuthService) VerifyAccessToken(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
 		u.log.Error("Empty access token")
@@ -156,7 +156,7 @@ func (u *UserService) VerifyAccessToken(c *gin.Context) {
 		return
 	}
 	// Extract the token from the header (format: "Bearer <token>")
-	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+	tokenString := strings.TrimPrefix(authHeader, constants.BearerPrefix)
 	claims, err := utils.VerifyToken(tokenString, constants.TokenTypeAccess)
 	if err != nil {
 		u.log.Error("Invalid access token")
@@ -169,12 +169,12 @@ func (u *UserService) VerifyAccessToken(c *gin.Context) {
 // get access token by refresh token
 // @Summary get access token by refresh token
 // @Description get access token by refresh token
-// @Tags users
+// @Tags auth
 // @Accept json
 // @Produce json
 // @Param request body dto.RefreshTokenRequest true "Refresh Token"
-// @Router /users/get-access-token-by-refresh-token [post]
-func (u *UserService) GetAccessTokenByRefreshToken(c *gin.Context) {
+// @Router /auth/get-access-token-by-refresh-token [post]
+func (u *AuthService) GetAccessTokenByRefreshToken(c *gin.Context) {
 	var req dto.RefreshTokenRequest
 	if err := c.BindJSON(&req); err != nil {
 		u.log.Error("Invalid request")
@@ -201,12 +201,12 @@ func (u *UserService) GetAccessTokenByRefreshToken(c *gin.Context) {
 // get forget password
 // @Summary get forget password
 // @Description get forget password
-// @Tags users
+// @Tags auth
 // @Accept json
 // @Produce json
 // @Param request body dto.ForgetPasswordRequest true "Phone number"
-// @Router /users/forget-password [post]
-func (u *UserService) ForgetPassword(c *gin.Context) {
+// @Router /auth/forget-password [post]
+func (u *AuthService) ForgetPassword(c *gin.Context) {
 	var req dto.ForgetPasswordRequest
 	if err := c.BindJSON(&req); err != nil {
 		u.log.Error("Invalid request")
@@ -235,7 +235,7 @@ func (u *UserService) ForgetPassword(c *gin.Context) {
 		return
 	}
 	// Generate password reset link
-	resetLink := fmt.Sprintf("http://127.0.0.1:8080/forget-password?key=%s", encryptedUUID)
+	resetLink := fmt.Sprintf("http://127.0.0.1:8080/auth/forget-password?key=%s", encryptedUUID)
 	go u.smsService.SendSMS([]string{req.PhoneNumber}, resetLink)
 	utils.SuccessResponse(c, "reset password has send to you", nil)
 
@@ -244,13 +244,13 @@ func (u *UserService) ForgetPassword(c *gin.Context) {
 // get reset password
 // @Summary get reset password
 // @Description get reset password
-// @Tags users
+// @Tags auth
 // @Accept json
 // @Produce json
 // @Param request body dto.PasswordResetRequest true "password and password_retype"
 // @Param key query string true "The encrypted key for password reset"
-// @Router /users/reset-password [post]
-func (u *UserService) ResetPassword(c *gin.Context) {
+// @Router /auth/reset-password [post]
+func (u *AuthService) ResetPassword(c *gin.Context) {
 	encryptionKey := c.Query("key")
 	var req dto.PasswordResetRequest
 	if encryptionKey == "" {

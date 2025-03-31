@@ -153,7 +153,7 @@ func (a *AdminService) CreateDoctorProfile(c *gin.Context) {
 	}
 
 	// Create the doctor profile and update the role atomically
-	doctorProfile, err := a.adminRepository.CreateDoctorProfileWithTransaction(req)
+	doctorProfile, err := a.adminRepository.CreateDoctorProfileWithTransaction(&req)
 	if err != nil {
 		a.log.Error("Error creating doctor profile: ", err)
 		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())

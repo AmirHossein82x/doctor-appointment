@@ -44,10 +44,7 @@ func (u *UserRepository) Register(user *domain.User) error {
 func (u *UserRepository) GetByPhoneNumber(phone string) (*domain.User, error) {
 	var user domain.User
 	err := u.DB.Where("phone = ?", phone).First(&user).Error
-	if err != nil {
-		return nil, err
-	}
-	return &user, nil
+	return &user, err
 }
 
 func (u *UserRepository) UpdatePassword(id uuid.UUID, Password string) error {

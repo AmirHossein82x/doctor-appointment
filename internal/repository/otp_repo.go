@@ -44,13 +44,7 @@ func (o *OtpRepository) VerifyOTP(PhoneNumber string, otp string) (bool, error) 
 	if err != nil {
 		return false, fmt.Errorf("failed to retrieve OTP from Redis: %w", err)
 	}
-
-	// Compare the OTPs
-	if storedOtp == otp {
-		return true, nil
-	}
-
-	return false, nil
+	return storedOtp == otp, nil
 }
 
 func (o *OtpRepository) GenerateVerifyOtpToken(PhoneNumber string) (string, error) {

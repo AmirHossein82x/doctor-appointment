@@ -2,6 +2,7 @@ package domain
 
 import (
 	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -11,7 +12,7 @@ type User struct {
 	Name      string    `gorm:"type:varchar(100);not null"`
 	Password  string    `gorm:"type:text;not null"`
 	Phone     string    `gorm:"type:varchar(20);unique"`
-	Role      string    `gorm:"type:user_role;not null;default:'normal'"`
+	Role      string    `gorm:"type:user_role;not null;default:'patient'"`
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP"`
 }
 

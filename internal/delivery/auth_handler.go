@@ -11,10 +11,10 @@ import (
 
 func SetUpUserRoutes(router *gin.RouterGroup) {
 	log := logger.SetUpLogger()
-	log.Info("Setting up User routes")
+	log.Info("Setting up auth routes")
 	authRepo := repository.NewAuthRepository(infrastructure.GetRedisClient())
 	SmsService := infrastructure.NewKavenegarSmsService()
-	var AuthHandler ports.UserService = services.NewAuthService(authRepo, log, SmsService)
+	var AuthHandler ports.AuthService = services.NewAuthService(authRepo, log, SmsService)
 
 	userRoute := router.Group("/auth")
 	userRoute.POST("/register", AuthHandler.Register)

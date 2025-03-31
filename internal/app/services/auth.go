@@ -17,12 +17,12 @@ import (
 )
 
 type AuthService struct {
-	userRepo   ports.UserRepository
+	userRepo   ports.AuthRepository
 	log        *logrus.Logger
 	smsService ports.SmsService
 }
 
-func NewAuthService(userRepo ports.UserRepository, log *logrus.Logger, smsService ports.SmsService) *AuthService {
+func NewAuthService(userRepo ports.AuthRepository, log *logrus.Logger, smsService ports.SmsService) *AuthService {
 	return &AuthService{userRepo: userRepo, log: log, smsService: smsService}
 }
 

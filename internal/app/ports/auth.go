@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserService interface {
+type AuthService interface {
 	Register(*gin.Context)
 	Login(*gin.Context)
 	VerifyAccessToken(*gin.Context)
@@ -15,7 +15,7 @@ type UserService interface {
 	ResetPassword(*gin.Context)
 }
 
-type UserRepository interface {
+type AuthRepository interface {
 	Register(*domain.User) error
 	GetPhoneNumberFromToken(string) (string, error)
 	GetByPhoneNumber(string) (*domain.User, error)

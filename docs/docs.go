@@ -15,6 +15,38 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/create-speciality": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new speciality with a name, description, and auto-generated slug",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Create a new speciality",
+                "parameters": [
+                    {
+                        "description": "Speciality details",
+                        "name": "speciality",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SpecialityCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/admin/get-all-users": {
             "get": {
                 "security": [
@@ -46,6 +78,44 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Search query (name or phone starts with)",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/get-specialities": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve specialities with pagination and search on the name of the speciality",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Retrieve specialities with pagination and search",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search query (name starts with)",
                         "name": "search",
                         "in": "query"
                     }
@@ -298,6 +368,20 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SpecialityCreateRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }

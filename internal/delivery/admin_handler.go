@@ -21,4 +21,6 @@ func SetUpAdminRoutes(router *gin.RouterGroup) {
 	AdminRoute := router.Group("/admin", middleware.AuthMiddleware(constants.AdminRole))
 
 	AdminRoute.GET("/get-all-users", AdminHandler.GetAllUsers)
+	AdminRoute.POST("/create-speciality", AdminHandler.CreateSpeciality)
+	AdminRoute.GET("/get-specialities", AdminHandler.RetrieveSpeciality)
 }

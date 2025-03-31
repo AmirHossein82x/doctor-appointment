@@ -21,6 +21,15 @@ definitions:
       refresh_token:
         type: string
     type: object
+  dto.SpecialityCreateRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
   dto.UserLoginRequest:
     properties:
       password:
@@ -47,6 +56,27 @@ definitions:
 info:
   contact: {}
 paths:
+  /admin/create-speciality:
+    post:
+      consumes:
+      - application/json
+      description: Create a new speciality with a name, description, and auto-generated
+        slug
+      parameters:
+      - description: Speciality details
+        in: body
+        name: speciality
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SpecialityCreateRequest'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Create a new speciality
+      tags:
+      - admin
   /admin/get-all-users:
     get:
       description: retrieve all users with pagination and search
@@ -69,6 +99,31 @@ paths:
       security:
       - BearerAuth: []
       summary: retrieve all users with pagination and search
+      tags:
+      - admin
+  /admin/get-specialities:
+    get:
+      description: Retrieve specialities with pagination and search on the name of
+        the speciality
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Search query (name starts with)
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Retrieve specialities with pagination and search
       tags:
       - admin
   /otp/generate:

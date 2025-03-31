@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/dto"
+	"github.com/AmirHossein82x/doctor-appointment/internal/domain"
 	"github.com/AmirHossein82x/doctor-appointment/internal/infrastructure"
 	"gorm.io/gorm"
 )
@@ -34,4 +35,39 @@ func (a *AdminRepository) GetAllUsers(page int, limit int, search string) ([]dto
 		return nil, err
 	}
 	return users, nil
+}
+
+func (a *AdminRepository) CreateSpeciality(name, slug, description string) (domain.Speciality, error) {
+	var speciality domain.Speciality = domain.Speciality{
+		Name: name,
+		Slug: slug,
+		Description: description,
+	}
+	err := a.DB.Create(&speciality).Error
+	return speciality, err
+
+	
+	
+}
+
+func (a *AdminRepository) RetrieveSpeciality(page int, limit int, search string) ([]dto.SpecialityRetrieveResponse, error) {
+	var specialities []dto.SpecialityRetrieveResponse
+	offset := (page - 1) * limit
+
+	query := a.DB.Table("speciality").
+		Select("id, name, slug, description")
+
+	// Add search condition if search parameter is provided
+	if search != "" {
+		query = query.Where("name LIKE ?", search+"%")
+	}
+
+	// Apply pagination after filtering
+	query = query.Offset(offset).Limit(limit)
+
+	err := query.Scan(&specialities).Error
+	if err != nil {
+		return nil, err
+	}
+	return specialities, nil
 }

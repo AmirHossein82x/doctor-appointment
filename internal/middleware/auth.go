@@ -47,7 +47,7 @@ func AuthMiddleware(Role constants.RoleType) gin.HandlerFunc {
 		})
 
 		if err != nil || !token.Valid {
-			handleUnauthorized(c, "Invalid token")
+			handleUnauthorized(c, "Invalid token or token has expired")
 			return
 		}
 

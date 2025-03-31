@@ -22,14 +22,14 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "retrieve all users with pagination",
+                "description": "retrieve all users with pagination and search",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "admin"
                 ],
-                "summary": "retrieve all users with pagination",
+                "summary": "retrieve all users with pagination and search",
                 "parameters": [
                     {
                         "type": "integer",
@@ -41,6 +41,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Number of items per page",
                         "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search query (name or phone starts with)",
+                        "name": "search",
                         "in": "query"
                     }
                 ],

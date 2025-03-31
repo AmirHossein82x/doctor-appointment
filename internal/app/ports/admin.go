@@ -12,5 +12,5 @@ type AdminService interface {
 }
 
 type AdminRepository interface {
-	GetAllUsers(int, int) ([]dto.UserResponse, error)
+	GetAllUsers(int, int, string) ([]dto.UserRetrieveResponse, error)
 }

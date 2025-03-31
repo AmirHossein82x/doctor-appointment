@@ -49,7 +49,7 @@ info:
 paths:
   /admin/get-all-users:
     get:
-      description: retrieve all users with pagination
+      description: retrieve all users with pagination and search
       parameters:
       - description: Page number
         in: query
@@ -59,12 +59,16 @@ paths:
         in: query
         name: limit
         type: integer
+      - description: Search query (name or phone starts with)
+        in: query
+        name: search
+        type: string
       produces:
       - application/json
       responses: {}
       security:
       - BearerAuth: []
-      summary: retrieve all users with pagination
+      summary: retrieve all users with pagination and search
       tags:
       - admin
   /otp/generate:

@@ -14,14 +14,22 @@ func NewAdminRepository() *AdminRepository {
 	return &AdminRepository{DB: infrastructure.DB}
 }
 
-func (a *AdminRepository) GetAllUsers(page int, limit int) ([]dto.UserResponse, error) {
-	var users []dto.UserResponse
+func (a *AdminRepository) GetAllUsers(page int, limit int, search string) ([]dto.UserRetrieveResponse, error) {
+	var users []dto.UserRetrieveResponse
 	offset := (page - 1) * limit
-	err := a.DB.Table("users").
-		Select("id, phone, name, role").
-		Offset(offset).
-		Limit(limit).
-		Scan(&users).Error
+
+	query := a.DB.Table("users").
+		Select("id, phone, name, role")
+
+	// Add search condition if search parameter is provided
+	if search != "" {
+		query = query.Where("phone LIKE ? OR name LIKE ?", search+"%", search+"%")
+	}
+
+	// Apply pagination after filtering
+	query = query.Offset(offset).Limit(limit)
+
+	err := query.Scan(&users).Error
 	if err != nil {
 		return nil, err
 	}

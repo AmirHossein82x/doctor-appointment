@@ -6,7 +6,6 @@ const (
 	AdminRole  RoleType = "admin"
 	NormalRole RoleType = "normal"
 	DoctorRole RoleType = "doctor"
-	
+
 	BearerPrefix string = "Bearer "
-	
 )

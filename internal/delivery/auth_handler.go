@@ -16,11 +16,11 @@ func SetUpUserRoutes(router *gin.RouterGroup) {
 	SmsService := infrastructure.NewKavenegarSmsService()
 	var AuthHandler ports.AuthService = services.NewAuthService(authRepo, log, SmsService)
 
-	userRoute := router.Group("/auth")
-	userRoute.POST("/register", AuthHandler.Register)
-	userRoute.POST("/login", AuthHandler.Login)
-	userRoute.POST("/verify-access-token", AuthHandler.VerifyAccessToken)
-	userRoute.POST("/get-access-token-by-refresh-token", AuthHandler.GetAccessTokenByRefreshToken)
-	userRoute.POST("/forget-password", AuthHandler.ForgetPassword)
-	userRoute.POST("/reset-password", AuthHandler.ResetPassword)
+	authRoute := router.Group("/auth")
+	authRoute.POST("/register", AuthHandler.Register)
+	authRoute.POST("/login", AuthHandler.Login)
+	authRoute.POST("/verify-access-token", AuthHandler.VerifyAccessToken)
+	authRoute.POST("/get-access-token-by-refresh-token", AuthHandler.GetAccessTokenByRefreshToken)
+	authRoute.POST("/forget-password", AuthHandler.ForgetPassword)
+	authRoute.POST("/reset-password", AuthHandler.ResetPassword)
 }

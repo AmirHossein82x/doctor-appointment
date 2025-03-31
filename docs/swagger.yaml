@@ -133,7 +133,7 @@ paths:
         enum:
         - admin
         - doctor
-        - normal
+        - patient
         in: query
         name: role
         type: string

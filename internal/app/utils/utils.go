@@ -30,7 +30,7 @@ func GenerateSlug(input string) string {
 	return input
 }
 
-var allowedRoles = []string{"admin", "doctor", "normal"}
+var allowedRoles = []string{"admin", "doctor", "patient"}
 
 // IsValidRole checks if the given role is valid
 func IsValidRole(role string) bool {

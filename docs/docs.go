@@ -117,7 +117,7 @@ const docTemplate = `{
                         "enum": [
                             "admin",
                             "doctor",
-                            "normal"
+                            "patient"
                         ],
                         "type": "string",
                         "description": "Search query (based on user_role)",

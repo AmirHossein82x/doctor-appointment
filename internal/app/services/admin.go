@@ -28,7 +28,7 @@ func NewAdminService(adminRepository ports.AdminRepository, log *logrus.Logger, 
 // @Param page query int false "Page number"
 // @Param limit query int false "Number of items per page"
 // @Param search query string false "Search query (name or phone starts with)"
-// @Param role query string false "Search query (based on user_role)" Enums(admin, doctor, normal)
+// @Param role query string false "Search query (based on user_role)" Enums(admin, doctor, patient)
 // @Security BearerAuth
 // @Router /admin/get-all-users [get]
 func (a *AdminService) GetAllUsers(c *gin.Context) {

@@ -15,7 +15,7 @@ func NewAdminRepository() *AdminRepository {
 	return &AdminRepository{DB: infrastructure.DB}
 }
 
-func (a *AdminRepository) GetAllUsers(page int, limit int, search string) ([]dto.UserRetrieveResponse, error) {
+func (a *AdminRepository) GetAllUsers(page int, limit int, search string, role string) ([]dto.UserRetrieveResponse, error) {
 	var users []dto.UserRetrieveResponse
 	offset := (page - 1) * limit
 
@@ -26,28 +26,26 @@ func (a *AdminRepository) GetAllUsers(page int, limit int, search string) ([]dto
 	if search != "" {
 		query = query.Where("phone LIKE ? OR name LIKE ?", search+"%", search+"%")
 	}
+	if role != "" {
+		query = query.Where("role = ?", role)
+	}
 
 	// Apply pagination after filtering
 	query = query.Offset(offset).Limit(limit)
 
 	err := query.Scan(&users).Error
-	if err != nil {
-		return nil, err
-	}
-	return users, nil
+	return users, err
 }
 
 func (a *AdminRepository) CreateSpeciality(name, slug, description string) (domain.Speciality, error) {
 	var speciality domain.Speciality = domain.Speciality{
-		Name: name,
-		Slug: slug,
+		Name:        name,
+		Slug:        slug,
 		Description: description,
 	}
 	err := a.DB.Create(&speciality).Error
 	return speciality, err
 
-	
-	
 }
 
 func (a *AdminRepository) RetrieveSpeciality(page int, limit int, search string) ([]dto.SpecialityRetrieveResponse, error) {
@@ -66,8 +64,5 @@ func (a *AdminRepository) RetrieveSpeciality(page int, limit int, search string)
 	query = query.Offset(offset).Limit(limit)
 
 	err := query.Scan(&specialities).Error
-	if err != nil {
-		return nil, err
-	}
-	return specialities, nil
+	return specialities, err
 }

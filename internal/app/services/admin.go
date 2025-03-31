@@ -28,6 +28,7 @@ func NewAdminService(adminRepository ports.AdminRepository, log *logrus.Logger, 
 // @Param page query int false "Page number"
 // @Param limit query int false "Number of items per page"
 // @Param search query string false "Search query (name or phone starts with)"
+// @Param role query string false "Search query (based on user_role)" Enums(admin, doctor, normal)
 // @Security BearerAuth
 // @Router /admin/get-all-users [get]
 func (a *AdminService) GetAllUsers(c *gin.Context) {
@@ -48,8 +49,15 @@ func (a *AdminService) GetAllUsers(c *gin.Context) {
 	// Parse search parameter
 	search := c.Query("search")
 
+	// Parse and validate role parameter
+	role := c.Query("role")
+	if role != "" && !utils.IsValidRole(role) {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid role parameter")
+		return
+	}
+
 	// Fetch users with pagination and search
-	users, err := a.adminRepository.GetAllUsers(page, limit, search)
+	users, err := a.adminRepository.GetAllUsers(page, limit, search, role)
 	if err != nil {
 		a.log.Error("Error getting all users: ", err)
 		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())

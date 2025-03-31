@@ -13,7 +13,7 @@ type AdminService interface {
 }
 
 type AdminRepository interface {
-	GetAllUsers(int, int, string) ([]dto.UserRetrieveResponse, error)
+	GetAllUsers(int, int, string, string) ([]dto.UserRetrieveResponse, error)
 	CreateSpeciality(string, string, string) (domain.Speciality, error)
 	RetrieveSpeciality(int, int, string) ([]dto.SpecialityRetrieveResponse, error)
 }

@@ -80,6 +80,17 @@ const docTemplate = `{
                         "description": "Search query (name or phone starts with)",
                         "name": "search",
                         "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "admin",
+                            "doctor",
+                            "normal"
+                        ],
+                        "type": "string",
+                        "description": "Search query (based on user_role)",
+                        "name": "role",
+                        "in": "query"
                     }
                 ],
                 "responses": {}

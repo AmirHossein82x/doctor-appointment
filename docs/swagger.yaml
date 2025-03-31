@@ -93,6 +93,14 @@ paths:
         in: query
         name: search
         type: string
+      - description: Search query (based on user_role)
+        enum:
+        - admin
+        - doctor
+        - normal
+        in: query
+        name: role
+        type: string
       produces:
       - application/json
       responses: {}

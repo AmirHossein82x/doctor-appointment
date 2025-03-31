@@ -29,3 +29,15 @@ func GenerateSlug(input string) string {
 
 	return input
 }
+
+var allowedRoles = []string{"admin", "doctor", "normal"}
+
+// IsValidRole checks if the given role is valid
+func IsValidRole(role string) bool {
+	for _, allowedRole := range allowedRoles {
+		if role == allowedRole {
+			return true
+		}
+	}
+	return false
+}

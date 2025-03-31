@@ -17,6 +17,7 @@ func main() {
 	app.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	delivery.SetUpOtpRoutes(&app.RouterGroup)
 	delivery.SetUpUserRoutes(&app.RouterGroup)
+	delivery.SetUpAdminRoutes(&app.RouterGroup)
 
 	app.Run(":8080")
 

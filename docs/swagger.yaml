@@ -47,6 +47,26 @@ definitions:
 info:
   contact: {}
 paths:
+  /admin/get-all-users:
+    get:
+      description: retrieve all users with pagination
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: retrieve all users with pagination
+      tags:
+      - admin
   /otp/generate:
     post:
       consumes:

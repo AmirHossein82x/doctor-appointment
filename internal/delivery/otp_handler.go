@@ -9,11 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// SetUpUserRoutes sets up OTP-related routes.
-// @title Doctor Appointment API
-// @version 1.0
-// @description API for OTP-based authentication in Doctor Appointment system
-// @BasePath /api/v1
+
 func SetUpOtpRoutes(router *gin.RouterGroup) {
 	log := logger.SetUpLogger()
 	log.Info("Setting up OTP routes")

@@ -1,4 +1,20 @@
 definitions:
+  dto.DoctorProfileCreateRequest:
+    properties:
+      bio:
+        type: string
+      experience_years:
+        type: integer
+      speciality_id:
+        type: integer
+      user_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+    required:
+    - experience_years
+    - speciality_id
+    - user_id
+    type: object
   dto.ForgetPasswordRequest:
     properties:
       phone_number:
@@ -56,6 +72,26 @@ definitions:
 info:
   contact: {}
 paths:
+  /admin/create-doctor-profile:
+    post:
+      consumes:
+      - application/json
+      description: Create a new doctor profile and update the user's role to "doctor"
+      parameters:
+      - description: Doctor profile details
+        in: body
+        name: doctorProfile
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DoctorProfileCreateRequest'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Create a new doctor profile
+      tags:
+      - admin
   /admin/create-speciality:
     post:
       consumes:

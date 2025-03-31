@@ -133,3 +133,32 @@ func (a *AdminService) RetrieveSpeciality(c *gin.Context) {
 	}
 	utils.SuccessResponse(c, "Specialities retrieved successfully", specialities)
 }
+
+// create a new doctor profile
+// @Summary Create a new doctor profile
+// @Description Create a new doctor profile and update the user's role to "doctor"
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param doctorProfile body dto.DoctorProfileCreateRequest true "Doctor profile details"
+// @Security BearerAuth
+// @Router /admin/create-doctor-profile [post]
+func (a *AdminService) CreateDoctorProfile(c *gin.Context) {
+	a.log.Info("Create doctor profile")
+	var req dto.DoctorProfileCreateRequest
+	if err := c.BindJSON(&req); err != nil {
+		a.log.Error("Invalid request")
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid request")
+		return
+	}
+
+	// Create the doctor profile and update the role atomically
+	doctorProfile, err := a.adminRepository.CreateDoctorProfileWithTransaction(req)
+	if err != nil {
+		a.log.Error("Error creating doctor profile: ", err)
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.SuccessResponse(c, "Doctor profile created successfully", doctorProfile)
+}

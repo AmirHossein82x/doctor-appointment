@@ -15,6 +15,38 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/create-doctor-profile": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new doctor profile and update the user's role to \"doctor\"",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Create a new doctor profile",
+                "parameters": [
+                    {
+                        "description": "Doctor profile details",
+                        "name": "doctorProfile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DoctorProfileCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/admin/create-speciality": {
             "post": {
                 "security": [
@@ -348,6 +380,29 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.DoctorProfileCreateRequest": {
+            "type": "object",
+            "required": [
+                "experience_years",
+                "speciality_id",
+                "user_id"
+            ],
+            "properties": {
+                "bio": {
+                    "type": "string"
+                },
+                "experience_years": {
+                    "type": "integer"
+                },
+                "speciality_id": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                }
+            }
+        },
         "dto.ForgetPasswordRequest": {
             "type": "object",
             "properties": {

@@ -23,4 +23,5 @@ func SetUpAdminRoutes(router *gin.RouterGroup) {
 	AdminRoute.GET("/get-all-users", AdminHandler.GetAllUsers)
 	AdminRoute.POST("/create-speciality", AdminHandler.CreateSpeciality)
 	AdminRoute.GET("/get-specialities", AdminHandler.RetrieveSpeciality)
+	AdminRoute.POST("/create-doctor-profile", AdminHandler.CreateDoctorProfile)
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/dto"
 	"github.com/AmirHossein82x/doctor-appointment/internal/domain"
 	"github.com/AmirHossein82x/doctor-appointment/internal/infrastructure"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -65,4 +66,58 @@ func (a *AdminRepository) RetrieveSpeciality(page int, limit int, search string)
 
 	err := query.Scan(&specialities).Error
 	return specialities, err
+}
+
+func (a AdminRepository) UpdateRole(userID uuid.UUID) error {
+	var user domain.User
+	err := a.DB.Model(&user).Where("id = ?", userID).Update("role", "doctor").Error
+	return err
+}
+
+func (a *AdminRepository) CreateDoctorProfile(req dto.DoctorProfileCreateRequest) (domain.DoctorProfile, error) {
+	var doctorProfile domain.DoctorProfile = domain.DoctorProfile{
+		SpecialityID:    req.SpecialityID,
+		Bio:             req.Bio,
+		ExperienceYears: req.ExperienceYears,
+	}
+	err := a.DB.Create(&doctorProfile).Error
+	return doctorProfile, err
+
+}
+
+func (a *AdminRepository) CreateDoctorProfileWithTransaction(req dto.DoctorProfileCreateRequest) (domain.DoctorProfile, error) {
+	var doctorProfile domain.DoctorProfile
+
+	// Start a transaction
+	tx := a.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// Create the doctor profile
+	doctorProfile = domain.DoctorProfile{
+		ID:              req.UserID,
+		SpecialityID:    req.SpecialityID,
+		Bio:             req.Bio,
+		ExperienceYears: req.ExperienceYears,
+	}
+	if err := tx.Create(&doctorProfile).Error; err != nil {
+		tx.Rollback()
+		return doctorProfile, err
+	}
+
+	// Update the user's role to "doctor"
+	if err := tx.Model(&domain.User{}).Where("id = ?", req.UserID).Update("role", "doctor").Error; err != nil {
+		tx.Rollback()
+		return doctorProfile, err
+	}
+
+	// Commit the transaction
+	if err := tx.Commit().Error; err != nil {
+		return doctorProfile, err
+	}
+
+	return doctorProfile, nil
 }

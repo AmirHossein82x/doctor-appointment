@@ -19,9 +19,9 @@ func NewDoctorRepository() *DoctorRepository {
 
 func (d *DoctorRepository) CreateAppointment(date, startTime, endTime time.Time, doctorId uuid.UUID) (*domain.DoctorAppointment, error) {
 	appointment := domain.DoctorAppointment{
-		Date:            date,
-		StartTime:       startTime,
-		EndTime:         endTime,
+		Date:            date,                         // Convert to YYYY-MM-DD format
+		StartTime:       startTime.Format("15:04:05"), // Convert to HH:MM:SS format
+		EndTime:         endTime.Format("15:04:05"),   // Convert to HH:MM:SS format
 		DoctorProfileID: doctorId,
 	}
 	err := d.DB.Create(&appointment).Error
@@ -36,4 +36,16 @@ func (d *DoctorRepository) IsAppointmentAvailable(date, startTime, endTime time.
 		Count(&count).Error
 
 	return count == 0, err
+}
+
+func (d *DoctorRepository) GetAvailableAppointments(doctorId uuid.UUID, page, limit int) (*[]domain.DoctorAppointment, error) {
+	var appointments []domain.DoctorAppointment
+	now := time.Now()
+	offset := (page - 1) * limit
+
+	err := d.DB.Where("doctor_profile_id = ? AND date >= ? AND status = ?", doctorId, now, "available").
+		Order("date ASC").Offset(offset).Limit(limit).
+		Find(&appointments).Error
+
+	return &appointments, err
 }

@@ -20,4 +20,5 @@ func SetUpDoctorRoutes(router *gin.RouterGroup) {
 
 	doctorRoute := router.Group("/doctor", middleware.AuthMiddleware(constants.DoctorRole))
 	doctorRoute.POST("/create-appointment", doctorHandler.CreateAppointment)
+	doctorRoute.GET("/available-appointments", doctorHandler.GetAvailableAppointments)
 }

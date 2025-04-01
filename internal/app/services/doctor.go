@@ -77,3 +77,42 @@ func (d *DoctorService) CreateAppointment(c *gin.Context) {
 
 	utils.SuccessResponse(c, "appointment created successfully", appointment)
 }
+
+// get all available appointments
+// @Summary get all available appointments
+// @Description get all available appointments
+// @Tags doctor
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Number of items per page"
+// @Security BearerAuth
+// @Router /doctor/available-appointments [get]
+func (d *DoctorService) GetAvailableAppointments(c *gin.Context) {
+	// Get and parse Doctor ID from context
+	doctorID, err := utils.GetDoctorID(c)
+	if err != nil {
+		d.log.Error("failed to get doctor id")
+		utils.ErrorResponse(c, http.StatusBadRequest, "failed to get doctor id")
+		return
+	}
+	
+
+	// Parse pagination parameters
+	page, err := utils.GetQueryInt(c, "page", 1)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid page parameter")
+		return
+	}
+	limit, err := utils.GetQueryInt(c, "limit", 10)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid limit parameter")
+		return
+	}
+	appointments, err := d.doctorRepository.GetAvailableAppointments(doctorID, page, limit)
+	if err != nil {
+		d.log.Error("internal server error")
+		utils.ErrorResponse(c, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	utils.SuccessResponse(c, "retrieved suucessfully", appointments)
+}

@@ -312,6 +312,26 @@ paths:
       summary: verify access token
       tags:
       - auth
+  /doctor/available-appointments:
+    get:
+      description: get all available appointments
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get all available appointments
+      tags:
+      - doctor
   /doctor/create-appointment:
     post:
       consumes:

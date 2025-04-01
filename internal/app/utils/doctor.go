@@ -35,7 +35,6 @@ func ParseAppointmentTimes(dateStr, startStr, endStr string) (time.Time, time.Ti
 	return start, end, nil
 }
 
-
 // getDoctorID retrieves and parses the doctor ID from the Gin context.
 func GetDoctorID(c *gin.Context) (uuid.UUID, error) {
 	id, exists := c.Get("id")

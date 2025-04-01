@@ -11,6 +11,7 @@ import (
 
 type DoctorService interface {
 	CreateAppointment(*gin.Context)
+	GetAvailableAppointments(*gin.Context)
 }
 
 
@@ -18,4 +19,5 @@ type DoctorService interface {
 type DoctorRepository interface {
 	CreateAppointment(time.Time, time.Time, time.Time, uuid.UUID) (*domain.DoctorAppointment, error)
 	IsAppointmentAvailable(time.Time, time.Time, time.Time, uuid.UUID) (bool, error)
+	GetAvailableAppointments(uuid.UUID, int, int)(*[]domain.DoctorAppointment, error)
 }

@@ -20,8 +20,8 @@ func init() {
 	mySigningKey = []byte(cfg.SECRET_KEY)
 }
 
-// AuthMiddleware checks if the user is authenticated
-func AuthMiddleware(Role constants.RoleType) gin.HandlerFunc {
+// AuthMiddleware checks if the user is authenticated and has the required roles
+func AuthMiddleware(allowedRoles ...constants.RoleType) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Get the token from the Authorization header
 		authHeader := c.GetHeader("Authorization")
@@ -64,19 +64,39 @@ func AuthMiddleware(Role constants.RoleType) gin.HandlerFunc {
 			return
 		}
 
-		role, ok := claims["role"].(string)
-		if !ok || role != string(Role) {
-			handleUnauthorized(c, "you do not have permission to access this resource")
+		userRole, ok := claims["role"].(string)
+		if !ok {
+			handleUnauthorized(c, "Role not found in token")
 			return
 		}
 
-		// Add the username to the context for use in subsequent handlers
+		// Check if the user's role is allowed
+		if !isRoleAllowed(userRole, allowedRoles) {
+			handleUnauthorized(c, "You do not have permission to access this resource")
+			return
+		}
+
+		// Add the user details to the context for use in subsequent handlers
 		c.Set("id", claims["id"])
 		c.Set("name", claims["name"])
 		c.Set("role", claims["role"])
 
 		c.Next()
 	}
+}
+
+// isRoleAllowed checks if the user's role is in the list of allowed roles
+func isRoleAllowed(userRole string, allowedRoles []constants.RoleType) bool {
+	// If "authenticated" is in the allowed roles, allow all authenticated users
+	for _, role := range allowedRoles {
+		if role == constants.RoleAuthenticated {
+			return true
+		}
+		if userRole == string(role) {
+			return true
+		}
+	}
+	return false
 }
 
 // handleUnauthorized centralizes error responses for unauthorized access

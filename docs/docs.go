@@ -166,6 +166,38 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/appointment/get-doctor-profiles": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve all doctor profiles joined with user table",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointment"
+                ],
+                "summary": "Retrieve all doctor profiles",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/auth/forget-password": {
             "post": {
                 "description": "get forget password",

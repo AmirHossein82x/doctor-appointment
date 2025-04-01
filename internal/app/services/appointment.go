@@ -26,6 +26,7 @@ func NewAppointmentService(appointmentRepo ports.AppointmentRepository, log *log
 // @Produce json
 // @Param page query int false "Page number"
 // @Param limit query int false "Number of items per page"
+// @Param search query string false "Search query (slug of speciality)"
 // @Router /appointment/get-doctor-profiles [get]
 func (a *AppointmentService) GetDoctorProfiles(c *gin.Context) {
 	a.log.Info("Get Doctor Profiles called")
@@ -41,9 +42,10 @@ func (a *AppointmentService) GetDoctorProfiles(c *gin.Context) {
 		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid limit parameter")
 		return
 	}
+	search := c.Query("search")
 
 	// Fetch doctor profiles
-	doctorProfiles, err := a.appointmentRepo.GetDoctorProfiles(page, limit)
+	doctorProfiles, err := a.appointmentRepo.GetDoctorProfiles(page, limit, search)
 	if err != nil {
 		a.log.Error("Error retrieving doctor profiles: ", err)
 		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())

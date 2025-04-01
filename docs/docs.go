@@ -150,6 +150,12 @@ const docTemplate = `{
                         "description": "Number of items per page",
                         "name": "limit",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search query (slug of speciality)",
+                        "name": "search",
+                        "in": "query"
                     }
                 ],
                 "responses": {}

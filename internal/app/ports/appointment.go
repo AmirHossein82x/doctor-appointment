@@ -13,6 +13,6 @@ type AppointmentService interface {
 
 
 type AppointmentRepository interface {
-	GetDoctorProfiles(int, int) ([]map[string]interface{}, error)
+	GetDoctorProfiles(int, int, string) ([]map[string]interface{}, error)
 	RetrieveSpeciality(int, int, string) (*[]dto.SpecialityRetrieveResponse, error)
 }

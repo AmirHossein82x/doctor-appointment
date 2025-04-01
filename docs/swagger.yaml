@@ -157,6 +157,10 @@ paths:
         in: query
         name: limit
         type: integer
+      - description: Search query (slug of speciality)
+        in: query
+        name: search
+        type: string
       produces:
       - application/json
       responses: {}

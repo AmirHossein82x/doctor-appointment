@@ -14,26 +14,21 @@ func NewAppointmentRepository() *AppointmentRepository {
 	return &AppointmentRepository{DB: infrastructure.DB}
 }
 
-func (a *AppointmentRepository) GetDoctorProfiles(page int, limit int) ([]map[string]interface{}, error) {
+func (a *AppointmentRepository) GetDoctorProfiles(page int, limit int, search string) ([]map[string]interface{}, error) {
 	var doctorProfiles []map[string]interface{}
 	offset := (page - 1) * limit
 
-	// Query to join doctor_profile and users table
-	err := a.DB.Table("doctor_profile").
+	query := a.DB.Table("doctor_profile").
 		Select("doctor_profile.id, doctor_profile.bio, doctor_profile.experience_years, users.name, users.phone, users.role, speciality.name as speciality_name").
 		Joins("JOIN users ON doctor_profile.id = users.id").
-		Joins("JOIN speciality ON doctor_profile.speciality_id = speciality.id").
-		Offset(offset).
-		Limit(limit).
-		Scan(&doctorProfiles).Error
-
-	if err != nil {
-		return nil, err
+		Joins("JOIN speciality ON doctor_profile.speciality_id = speciality.id")
+	if search != "" {
+		query = query.Where("speciality.slug = ?", search)
 	}
-	return doctorProfiles, nil
+	query = query.Offset(offset).Limit(limit)
+	err := query.Scan(&doctorProfiles).Error
+	return doctorProfiles, err
 }
-
-
 
 func (a *AppointmentRepository) RetrieveSpeciality(page int, limit int, search string) (*[]dto.SpecialityRetrieveResponse, error) {
 	var specialities []dto.SpecialityRetrieveResponse

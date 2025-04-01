@@ -49,24 +49,7 @@ func (a *AdminRepository) CreateSpeciality(name, slug, description string) (*dom
 
 }
 
-func (a *AdminRepository) RetrieveSpeciality(page int, limit int, search string) (*[]dto.SpecialityRetrieveResponse, error) {
-	var specialities []dto.SpecialityRetrieveResponse
-	offset := (page - 1) * limit
 
-	query := a.DB.Table("speciality").
-		Select("id, name, slug, description")
-
-	// Add search condition if search parameter is provided
-	if search != "" {
-		query = query.Where("name LIKE ?", search+"%")
-	}
-
-	// Apply pagination after filtering
-	query = query.Offset(offset).Limit(limit)
-
-	err := query.Scan(&specialities).Error
-	return &specialities, err
-}
 
 func (a AdminRepository) UpdateRole(userID uuid.UUID) error {
 	var user domain.User

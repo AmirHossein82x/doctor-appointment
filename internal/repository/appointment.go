@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/AmirHossein82x/doctor-appointment/internal/app/dto"
 	"github.com/AmirHossein82x/doctor-appointment/internal/infrastructure"
 	"gorm.io/gorm"
 )
@@ -30,4 +31,25 @@ func (a *AppointmentRepository) GetDoctorProfiles(page int, limit int) ([]map[st
 		return nil, err
 	}
 	return doctorProfiles, nil
+}
+
+
+
+func (a *AppointmentRepository) RetrieveSpeciality(page int, limit int, search string) (*[]dto.SpecialityRetrieveResponse, error) {
+	var specialities []dto.SpecialityRetrieveResponse
+	offset := (page - 1) * limit
+
+	query := a.DB.Table("speciality").
+		Select("id, name, slug, description")
+
+	// Add search condition if search parameter is provided
+	if search != "" {
+		query = query.Where("name LIKE ?", search+"%")
+	}
+
+	// Apply pagination after filtering
+	query = query.Offset(offset).Limit(limit)
+
+	err := query.Scan(&specialities).Error
+	return &specialities, err
 }

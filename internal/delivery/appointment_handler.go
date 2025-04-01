@@ -14,8 +14,9 @@ func SetUpAppointmentRoutes(router *gin.RouterGroup) {
 	log.Info("Setting up Admin routes")
 	appointmentRepository := repository.NewAppointmentRepository()
 	SmsService := infrastructure.NewKavenegarSmsService()
-	var appointemntHandler ports.AppointmentService = services.NewAppointmentService(appointmentRepository, log, SmsService)
+	var appointmentHandler ports.AppointmentService = services.NewAppointmentService(appointmentRepository, log, SmsService)
 	appointmentRoute := router.Group("/appointment")
-	appointmentRoute.GET("/get-doctor-profiles", appointemntHandler.GetDoctorProfiles)
-	
+	appointmentRoute.GET("/get-doctor-profiles", appointmentHandler.GetDoctorProfiles)
+	appointmentRoute.GET("/get-specialities", appointmentHandler.RetrieveSpeciality)
+
 }

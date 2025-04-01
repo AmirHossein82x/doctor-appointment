@@ -145,7 +145,25 @@ paths:
       summary: retrieve all users with pagination and search
       tags:
       - admin
-  /admin/get-specialities:
+  /appointment/get-doctor-profiles:
+    get:
+      description: Retrieve all doctor profiles joined with user table
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Retrieve all doctor profiles
+      tags:
+      - appointment
+  /appointment/get-specialities:
     get:
       description: Retrieve specialities with pagination and search on the name of
         the speciality
@@ -165,29 +183,7 @@ paths:
       produces:
       - application/json
       responses: {}
-      security:
-      - BearerAuth: []
       summary: Retrieve specialities with pagination and search
-      tags:
-      - admin
-  /appointment/get-doctor-profiles:
-    get:
-      description: Retrieve all doctor profiles joined with user table
-      parameters:
-      - description: Page number
-        in: query
-        name: page
-        type: integer
-      - description: Number of items per page
-        in: query
-        name: limit
-        type: integer
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - BearerAuth: []
-      summary: Retrieve all doctor profiles
       tags:
       - appointment
   /auth/forget-password:

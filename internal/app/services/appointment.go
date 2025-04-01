@@ -26,7 +26,6 @@ func NewAppointmentService(appointmentRepo ports.AppointmentRepository, log *log
 // @Produce json
 // @Param page query int false "Page number"
 // @Param limit query int false "Number of items per page"
-// @Security BearerAuth
 // @Router /appointment/get-doctor-profiles [get]
 func (a *AppointmentService) GetDoctorProfiles(c *gin.Context) {
 	a.log.Info("Get Doctor Profiles called")
@@ -52,4 +51,42 @@ func (a *AppointmentService) GetDoctorProfiles(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, "Doctor profiles retrieved successfully", doctorProfiles)
+}
+
+
+// retrieve specialities with pagination and search
+// @Summary Retrieve specialities with pagination and search
+// @Description Retrieve specialities with pagination and search on the name of the speciality
+// @Tags appointment
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Number of items per page"
+// @Param search query string false "Search query (name starts with)"
+// @Router /appointment/get-specialities [get]
+func (a *AppointmentService) RetrieveSpeciality(c *gin.Context) {
+	a.log.Info("Retrieve specialities with pagination and search")
+
+	// Parse pagination parameters
+	page, err := utils.GetQueryInt(c, "page", 1)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid page parameter")
+		return
+	}
+	limit, err := utils.GetQueryInt(c, "limit", 10)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid limit parameter")
+		return
+	}
+
+	// Parse search parameter
+	search := c.Query("search")
+
+	// Fetch specialities with pagination and search
+	specialities, err := a.appointmentRepo.RetrieveSpeciality(page, limit, search)
+	if err != nil {
+		a.log.Error("Error retrieving specialities: ", err)
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	utils.SuccessResponse(c, "Specialities retrieved successfully", specialities)
 }

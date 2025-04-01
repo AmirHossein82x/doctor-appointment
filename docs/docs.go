@@ -128,51 +128,8 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/admin/get-specialities": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Retrieve specialities with pagination and search on the name of the speciality",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin"
-                ],
-                "summary": "Retrieve specialities with pagination and search",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Page number",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Number of items per page",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Search query (name starts with)",
-                        "name": "search",
-                        "in": "query"
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/appointment/get-doctor-profiles": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Retrieve all doctor profiles joined with user table",
                 "produces": [
                     "application/json"
@@ -192,6 +149,39 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Number of items per page",
                         "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/appointment/get-specialities": {
+            "get": {
+                "description": "Retrieve specialities with pagination and search on the name of the speciality",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointment"
+                ],
+                "summary": "Retrieve specialities with pagination and search",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search query (name starts with)",
+                        "name": "search",
                         "in": "query"
                     }
                 ],

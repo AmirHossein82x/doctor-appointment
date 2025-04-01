@@ -96,43 +96,6 @@ func (a *AdminService) CreateSpeciality(c *gin.Context) {
 	utils.SuccessResponse(c, "Speciality created successfully", speciality)
 }
 
-// retrieve specialities with pagination and search
-// @Summary Retrieve specialities with pagination and search
-// @Description Retrieve specialities with pagination and search on the name of the speciality
-// @Tags admin
-// @Produce json
-// @Param page query int false "Page number"
-// @Param limit query int false "Number of items per page"
-// @Param search query string false "Search query (name starts with)"
-// @Security BearerAuth
-// @Router /admin/get-specialities [get]
-func (a *AdminService) RetrieveSpeciality(c *gin.Context) {
-	a.log.Info("Retrieve specialities with pagination and search")
-
-	// Parse pagination parameters
-	page, err := utils.GetQueryInt(c, "page", 1)
-	if err != nil {
-		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid page parameter")
-		return
-	}
-	limit, err := utils.GetQueryInt(c, "limit", 10)
-	if err != nil {
-		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid limit parameter")
-		return
-	}
-
-	// Parse search parameter
-	search := c.Query("search")
-
-	// Fetch specialities with pagination and search
-	specialities, err := a.adminRepository.RetrieveSpeciality(page, limit, search)
-	if err != nil {
-		a.log.Error("Error retrieving specialities: ", err)
-		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
-	utils.SuccessResponse(c, "Specialities retrieved successfully", specialities)
-}
 
 // create a new doctor profile
 // @Summary Create a new doctor profile

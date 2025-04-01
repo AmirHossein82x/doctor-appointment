@@ -1,4 +1,20 @@
 definitions:
+  dto.AppointmentCreateRequest:
+    properties:
+      date:
+        description: Expecting YYYY-MM-DD format
+        type: string
+      end_time:
+        description: Expecting HH:MM:SS format
+        type: string
+      start_time:
+        description: Expecting HH:MM:SS format
+        type: string
+    required:
+    - date
+    - end_time
+    - start_time
+    type: object
   dto.DoctorProfileCreateRequest:
     properties:
       bio:
@@ -296,6 +312,26 @@ paths:
       summary: verify access token
       tags:
       - auth
+  /doctor/create-appointment:
+    post:
+      consumes:
+      - application/json
+      description: create doctor appointment
+      parameters:
+      - description: Doctor appointment details
+        in: body
+        name: doctorProfile
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AppointmentCreateRequest'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create doctor appointment
+      tags:
+      - doctor
   /otp/generate:
     post:
       consumes:

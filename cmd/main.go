@@ -19,6 +19,7 @@ func main() {
 	delivery.SetUpUserRoutes(&app.RouterGroup)
 	delivery.SetUpAdminRoutes(&app.RouterGroup)
 	delivery.SetUpAppointmentRoutes(&app.RouterGroup)
+	delivery.SetUpDoctorRoutes(&app.RouterGroup)
 
 	app.Run(":8080")
 

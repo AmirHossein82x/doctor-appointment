@@ -341,6 +341,38 @@
                 "responses": {}
             }
         },
+        "/doctor/create-appointment": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create doctor appointment",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "doctor"
+                ],
+                "summary": "create doctor appointment",
+                "parameters": [
+                    {
+                        "description": "Doctor appointment details",
+                        "name": "doctorProfile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AppointmentCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/otp/generate": {
             "post": {
                 "description": "Generates an OTP for phone number verification",
@@ -397,6 +429,28 @@
         }
     },
     "definitions": {
+        "dto.AppointmentCreateRequest": {
+            "type": "object",
+            "required": [
+                "date",
+                "end_time",
+                "start_time"
+            ],
+            "properties": {
+                "date": {
+                    "description": "Expecting YYYY-MM-DD format",
+                    "type": "string"
+                },
+                "end_time": {
+                    "description": "Expecting HH:MM:SS format",
+                    "type": "string"
+                },
+                "start_time": {
+                    "description": "Expecting HH:MM:SS format",
+                    "type": "string"
+                }
+            }
+        },
         "dto.DoctorProfileCreateRequest": {
             "type": "object",
             "required": [

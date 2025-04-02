@@ -16,7 +16,7 @@ func NewAdminRepository() *AdminRepository {
 	return &AdminRepository{DB: infrastructure.DB}
 }
 
-func (a *AdminRepository) GetAllUsers(page int, limit int, search string, role string) (*[]dto.UserRetrieveResponse, error) {
+func (a *AdminRepository) GetAllUsers(page int, limit int, search string, role string) ([]dto.UserRetrieveResponse, error) {
 	var users []dto.UserRetrieveResponse
 	offset := (page - 1) * limit
 
@@ -35,17 +35,17 @@ func (a *AdminRepository) GetAllUsers(page int, limit int, search string, role s
 	query = query.Offset(offset).Limit(limit)
 
 	err := query.Scan(&users).Error
-	return &users, err
+	return users, err
 }
 
-func (a *AdminRepository) CreateSpeciality(name, slug, description string) (*domain.Speciality, error) {
+func (a *AdminRepository) CreateSpeciality(name, slug, description string) (domain.Speciality, error) {
 	var speciality domain.Speciality = domain.Speciality{
 		Name:        name,
 		Slug:        slug,
 		Description: description,
 	}
 	err := a.DB.Create(&speciality).Error
-	return &speciality, err
+	return speciality, err
 
 }
 
@@ -68,7 +68,7 @@ func (a *AdminRepository) CreateDoctorProfile(req dto.DoctorProfileCreateRequest
 
 }
 
-func (a *AdminRepository) CreateDoctorProfileWithTransaction(req *dto.DoctorProfileCreateRequest) (*domain.DoctorProfile, error) {
+func (a *AdminRepository) CreateDoctorProfileWithTransaction(req *dto.DoctorProfileCreateRequest) (domain.DoctorProfile, error) {
 	var doctorProfile domain.DoctorProfile
 
 	// Start a transaction
@@ -88,19 +88,19 @@ func (a *AdminRepository) CreateDoctorProfileWithTransaction(req *dto.DoctorProf
 	}
 	if err := tx.Create(&doctorProfile).Error; err != nil {
 		tx.Rollback()
-		return &doctorProfile, err
+		return doctorProfile, err
 	}
 
 	// Update the user's role to "doctor"
 	if err := tx.Model(&domain.User{}).Where("id = ?", req.UserID).Update("role", "doctor").Error; err != nil {
 		tx.Rollback()
-		return &doctorProfile, err
+		return doctorProfile, err
 	}
 
 	// Commit the transaction
 	if err := tx.Commit().Error; err != nil {
-		return &doctorProfile, err
+		return doctorProfile, err
 	}
 
-	return &doctorProfile, nil
+	return doctorProfile, nil
 }

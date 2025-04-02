@@ -41,10 +41,10 @@ func (u *AuthRepository) Register(user *domain.User) error {
 
 }
 
-func (u *AuthRepository) GetByPhoneNumber(phone string) (*domain.User, error) {
+func (u *AuthRepository) GetByPhoneNumber(phone string) (domain.User, error) {
 	var user domain.User
 	err := u.DB.Where("phone = ?", phone).First(&user).Error
-	return &user, err
+	return user, err
 }
 
 func (u *AuthRepository) UpdatePassword(id uuid.UUID, Password string) error {

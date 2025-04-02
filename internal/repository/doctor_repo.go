@@ -17,7 +17,7 @@ func NewDoctorRepository() *DoctorRepository {
 	return &DoctorRepository{DB: infrastructure.DB}
 }
 
-func (d *DoctorRepository) CreateAppointment(date, startTime, endTime time.Time, doctorId uuid.UUID) (*domain.DoctorAppointment, error) {
+func (d *DoctorRepository) CreateAppointment(date, startTime, endTime time.Time, doctorId uuid.UUID) (domain.DoctorAppointment, error) {
 	appointment := domain.DoctorAppointment{
 		Date:            date,                         
 		StartTime:       startTime.Format("15:04:05"), // Convert to HH:MM:SS format
@@ -25,7 +25,7 @@ func (d *DoctorRepository) CreateAppointment(date, startTime, endTime time.Time,
 		DoctorProfileID: doctorId,
 	}
 	err := d.DB.Create(&appointment).Error
-	return &appointment, err
+	return appointment, err
 
 }
 func (d *DoctorRepository) IsAppointmentAvailable(date, startTime, endTime time.Time, doctorId uuid.UUID) (bool, error) {
@@ -38,7 +38,7 @@ func (d *DoctorRepository) IsAppointmentAvailable(date, startTime, endTime time.
 	return count == 0, err
 }
 
-func (d *DoctorRepository) GetAvailableAppointments(doctorId uuid.UUID, page, limit int) (*[]domain.DoctorAppointment, error) {
+func (d *DoctorRepository) GetAvailableAppointments(doctorId uuid.UUID, page, limit int) ([]domain.DoctorAppointment, error) {
 	var appointments []domain.DoctorAppointment
 	now := time.Now()
 	offset := (page - 1) * limit
@@ -47,5 +47,5 @@ func (d *DoctorRepository) GetAvailableAppointments(doctorId uuid.UUID, page, li
 		Order("date ASC").Offset(offset).Limit(limit).
 		Find(&appointments).Error
 
-	return &appointments, err
+	return appointments, err
 }

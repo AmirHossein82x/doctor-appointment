@@ -13,7 +13,7 @@ type AdminService interface {
 }
 
 type AdminRepository interface {
-	GetAllUsers(int, int, string, string) (*[]dto.UserRetrieveResponse, error)
-	CreateSpeciality(string, string, string) (*domain.Speciality, error)
-	CreateDoctorProfileWithTransaction(*dto.DoctorProfileCreateRequest) (*domain.DoctorProfile, error)
+	GetAllUsers(page int, limit int, search string, role string) ([]dto.UserRetrieveResponse, error)
+	CreateSpeciality(string, string, string) (domain.Speciality, error)
+	CreateDoctorProfileWithTransaction(*dto.DoctorProfileCreateRequest) (domain.DoctorProfile, error)
 }

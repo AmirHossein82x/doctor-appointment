@@ -18,7 +18,7 @@ type AuthService interface {
 type AuthRepository interface {
 	Register(*domain.User) error
 	GetPhoneNumberFromToken(string) (string, error)
-	GetByPhoneNumber(string) (*domain.User, error)
+	GetByPhoneNumber(string) (domain.User, error)
 	UpdatePassword(uuid.UUID, string) error
 	SaveEncryptionKeyToRedis(string) error
 	ExistsEncryptionKey(string) bool

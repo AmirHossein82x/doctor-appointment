@@ -18,7 +18,7 @@ type AppointmentService interface {
 
 type AppointmentRepository interface {
 	GetDoctorProfiles(int, int, string) ([]map[string]interface{}, error)
-	RetrieveSpeciality(int, int, string) (*[]dto.SpecialityRetrieveResponse, error)
-	GetAppointmentsByDoctorId(uuid.UUID, time.Time, string, int, int) (*[]domain.DoctorAppointment, error)
+	RetrieveSpeciality(int, int, string) ([]dto.SpecialityRetrieveResponse, error)
+	GetAppointmentsByDoctorId(uuid.UUID, time.Time, string, int, int) ([]domain.DoctorAppointment, error)
 	GetAppointmentsBySpeciality(string, time.Time, string, int, int) ([]map[string]interface{}, error)
 }

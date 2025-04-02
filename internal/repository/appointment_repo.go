@@ -34,7 +34,7 @@ func (a *AppointmentRepository) GetDoctorProfiles(page int, limit int, search st
 	return doctorProfiles, err
 }
 
-func (a *AppointmentRepository) RetrieveSpeciality(page int, limit int, search string) (*[]dto.SpecialityRetrieveResponse, error) {
+func (a *AppointmentRepository) RetrieveSpeciality(page int, limit int, search string) ([]dto.SpecialityRetrieveResponse, error) {
 	var specialities []dto.SpecialityRetrieveResponse
 	offset := (page - 1) * limit
 
@@ -50,10 +50,10 @@ func (a *AppointmentRepository) RetrieveSpeciality(page int, limit int, search s
 	query = query.Offset(offset).Limit(limit)
 
 	err := query.Scan(&specialities).Error
-	return &specialities, err
+	return specialities, err
 }
 
-func (a *AppointmentRepository) GetAppointmentsByDoctorId(doctorId uuid.UUID, date time.Time, status string, page, limit int) (*[]domain.DoctorAppointment, error) {
+func (a *AppointmentRepository) GetAppointmentsByDoctorId(doctorId uuid.UUID, date time.Time, status string, page, limit int) ([]domain.DoctorAppointment, error) {
 	var appointments []domain.DoctorAppointment
 	offset := (page - 1) * limit
 	now := time.Now()
@@ -75,7 +75,7 @@ func (a *AppointmentRepository) GetAppointmentsByDoctorId(doctorId uuid.UUID, da
 		Limit(limit).
 		Find(&appointments).Error
 
-	return &appointments, err
+	return appointments, err
 }
 
 func (a *AppointmentRepository) GetAppointmentsBySpeciality(slug string, date time.Time, status string, page, limit int) ([]map[string]interface{}, error) {

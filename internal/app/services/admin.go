@@ -96,7 +96,6 @@ func (a *AdminService) CreateSpeciality(c *gin.Context) {
 	utils.SuccessResponse(c, "Speciality created successfully", speciality)
 }
 
-
 // create a new doctor profile
 // @Summary Create a new doctor profile
 // @Description Create a new doctor profile and update the user's role to "doctor"

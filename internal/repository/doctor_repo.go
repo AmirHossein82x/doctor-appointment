@@ -19,7 +19,7 @@ func NewDoctorRepository() *DoctorRepository {
 
 func (d *DoctorRepository) CreateAppointment(date, startTime, endTime time.Time, doctorId uuid.UUID) (*domain.DoctorAppointment, error) {
 	appointment := domain.DoctorAppointment{
-		Date:            date,                         // Convert to YYYY-MM-DD format
+		Date:            date,                         
 		StartTime:       startTime.Format("15:04:05"), // Convert to HH:MM:SS format
 		EndTime:         endTime.Format("15:04:05"),   // Convert to HH:MM:SS format
 		DoctorProfileID: doctorId,

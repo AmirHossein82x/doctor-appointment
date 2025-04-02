@@ -11,12 +11,13 @@ import (
 
 func SetUpAppointmentRoutes(router *gin.RouterGroup) {
 	log := logger.SetUpLogger()
-	log.Info("Setting up Admin routes")
+	log.Info("Setting up Appointment routes")
 	appointmentRepository := repository.NewAppointmentRepository()
 	SmsService := infrastructure.NewKavenegarSmsService()
 	var appointmentHandler ports.AppointmentService = services.NewAppointmentService(appointmentRepository, log, SmsService)
 	appointmentRoute := router.Group("/appointment")
 	appointmentRoute.GET("/get-doctor-profiles", appointmentHandler.GetDoctorProfiles)
 	appointmentRoute.GET("/get-specialities", appointmentHandler.RetrieveSpeciality)
+	appointmentRoute.GET("/:doctor_id", appointmentHandler.GetAppointmentsByDoctorId)
 
 }

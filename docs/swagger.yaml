@@ -161,6 +161,33 @@ paths:
       summary: retrieve all users with pagination and search
       tags:
       - admin
+  /appointment/{doctor_id}:
+    get:
+      description: Retrieve appointments by doctor id with pagination
+      parameters:
+      - description: Doctor ID
+        in: path
+        name: doctor_id
+        required: true
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Appointment date in YYYY-MM-DD format
+        in: query
+        name: date
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Retrieve appointments by doctor id with pagination
+      tags:
+      - appointment
   /appointment/get-doctor-profiles:
     get:
       description: Retrieve all doctor profiles joined with user table

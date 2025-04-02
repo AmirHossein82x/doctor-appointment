@@ -13,7 +13,7 @@ import (
 
 func SetUpDoctorRoutes(router *gin.RouterGroup) {
 	log := logger.SetUpLogger()
-	log.Info("Setting up auth routes")
+	log.Info("Setting up doctor routes")
 	doctorRepo := repository.NewDoctorRepository()
 	SmsService := infrastructure.NewKavenegarSmsService()
 	var doctorHandler ports.DoctorService = services.NewDoctorService(doctorRepo, log, SmsService)

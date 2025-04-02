@@ -1,8 +1,12 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/dto"
+	"github.com/AmirHossein82x/doctor-appointment/internal/domain"
 	"github.com/AmirHossein82x/doctor-appointment/internal/infrastructure"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -47,4 +51,21 @@ func (a *AppointmentRepository) RetrieveSpeciality(page int, limit int, search s
 
 	err := query.Scan(&specialities).Error
 	return &specialities, err
+}
+
+func (a *AppointmentRepository) GetAppointmentsByDoctorId(doctorId uuid.UUID, date time.Time, page, limit int) (*[]domain.DoctorAppointment, error) {
+	var appointments []domain.DoctorAppointment
+	offset := (page - 1) * limit
+	now := time.Now()
+
+	query := a.DB.Table("doctor_appointment").
+		Where("doctor_profile_id = ? AND date >= ?", doctorId, now)
+	if !date.IsZero() {
+		query = query.Where("date = ?", date)
+	}
+	err := query.Offset(offset).
+		Limit(limit).
+		Find(&appointments).Error
+
+	return &appointments, err
 }

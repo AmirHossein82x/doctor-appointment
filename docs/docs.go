@@ -194,6 +194,46 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/appointment/{doctor_id}": {
+            "get": {
+                "description": "Retrieve appointments by doctor id with pagination",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointment"
+                ],
+                "summary": "Retrieve appointments by doctor id with pagination",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Doctor ID",
+                        "name": "doctor_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Appointment date in YYYY-MM-DD format",
+                        "name": "date",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/auth/forget-password": {
             "post": {
                 "description": "get forget password",

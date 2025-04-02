@@ -22,14 +22,36 @@ func (a *AppointmentRepository) GetDoctorProfiles(page int, limit int, search st
 	var doctorProfiles []map[string]interface{}
 	offset := (page - 1) * limit
 
+	// Build the query with appointments_available_count
 	query := a.DB.Table("doctor_profile").
-		Select("doctor_profile.id, doctor_profile.bio, doctor_profile.experience_years, users.name, users.phone, users.role, speciality.name as speciality_name").
+		Select(`
+			doctor_profile.id,
+			doctor_profile.bio,
+			doctor_profile.experience_years,
+			users.name,
+			users.phone,
+			users.role,
+			speciality.name AS speciality_name,
+			(
+				SELECT COUNT(*)
+				FROM doctor_appointment
+				WHERE doctor_appointment.doctor_profile_id = doctor_profile.id
+				AND doctor_appointment.status = 'available'
+				AND doctor_appointment.date > NOW()
+			) AS appointments_available_count
+		`).
 		Joins("JOIN users ON doctor_profile.id = users.id").
 		Joins("JOIN speciality ON doctor_profile.speciality_id = speciality.id")
+
+	// Add search condition if search parameter is provided
 	if search != "" {
 		query = query.Where("speciality.slug = ?", search)
 	}
+
+	// Apply pagination
 	query = query.Offset(offset).Limit(limit)
+
+	// Execute the query
 	err := query.Scan(&doctorProfiles).Error
 	return doctorProfiles, err
 }

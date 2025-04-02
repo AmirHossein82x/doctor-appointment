@@ -194,6 +194,56 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/appointment/speciality/{slug}": {
+            "get": {
+                "description": "Retrieve appointments by speciality slug with pagination",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointment"
+                ],
+                "summary": "Retrieve appointments by speciality slug with pagination",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "speciality slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Appointment date in YYYY-MM-DD format",
+                        "name": "date",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "available",
+                            "booked"
+                        ],
+                        "type": "string",
+                        "description": "Search query (based on status)",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/appointment/{doctor_id}": {
             "get": {
                 "description": "Retrieve appointments by doctor id with pagination",
@@ -228,6 +278,16 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Appointment date in YYYY-MM-DD format",
                         "name": "date",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "available",
+                            "booked"
+                        ],
+                        "type": "string",
+                        "description": "Search query (based on status)",
+                        "name": "status",
                         "in": "query"
                     }
                 ],

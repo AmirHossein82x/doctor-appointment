@@ -19,5 +19,6 @@ func SetUpAppointmentRoutes(router *gin.RouterGroup) {
 	appointmentRoute.GET("/get-doctor-profiles", appointmentHandler.GetDoctorProfiles)
 	appointmentRoute.GET("/get-specialities", appointmentHandler.RetrieveSpeciality)
 	appointmentRoute.GET("/:doctor_id", appointmentHandler.GetAppointmentsByDoctorId)
+	appointmentRoute.GET("/speciality/:slug", appointmentHandler.GetAppointmentsBySpeciality)
 
 }

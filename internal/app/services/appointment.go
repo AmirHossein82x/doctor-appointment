@@ -36,11 +36,13 @@ func (a *AppointmentService) GetDoctorProfiles(c *gin.Context) {
 	// Parse pagination parameters
 	page, err := utils.GetQueryInt(c, "page", 1)
 	if err != nil {
+		a.log.Error("Invalid page parameter")
 		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid page parameter")
 		return
 	}
 	limit, err := utils.GetQueryInt(c, "limit", 10)
 	if err != nil {
+		a.log.Error("Invalid limit parameter")
 		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid limit parameter")
 		return
 	}
@@ -72,11 +74,13 @@ func (a *AppointmentService) RetrieveSpeciality(c *gin.Context) {
 	// Parse pagination parameters
 	page, err := utils.GetQueryInt(c, "page", 1)
 	if err != nil {
+		a.log.Error("Invalid page parameter")
 		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid page parameter")
 		return
 	}
 	limit, err := utils.GetQueryInt(c, "limit", 10)
 	if err != nil {
+		a.log.Error("Invalid limit parameter")
 		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid limit parameter")
 		return
 	}
@@ -103,11 +107,13 @@ func (a *AppointmentService) RetrieveSpeciality(c *gin.Context) {
 // @Param page query int false "Page number"
 // @Param limit query int false "Number of items per page"
 // @Param date query string false "Appointment date in YYYY-MM-DD format"
+// @Param status query string false "Search query (based on status)" Enums(available, booked)
 // @Router /appointment/{doctor_id} [get]
 func (a *AppointmentService) GetAppointmentsByDoctorId(c *gin.Context) {
 	// Parse doctor_id from the request path
 	doctorID := c.Param("doctor_id")
 	if doctorID == "" {
+		a.log.Error("Doctor ID is required")
 		utils.ErrorResponse(c, http.StatusBadRequest, "Doctor ID is required")
 		return
 	}
@@ -122,11 +128,13 @@ func (a *AppointmentService) GetAppointmentsByDoctorId(c *gin.Context) {
 	// Parse pagination parameters
 	page, err := utils.GetQueryInt(c, "page", 1)
 	if err != nil {
+		a.log.Error("Invalid page parameter")
 		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid page parameter")
 		return
 	}
 	limit, err := utils.GetQueryInt(c, "limit", 10)
 	if err != nil {
+		a.log.Error("Invalid limit parameter")
 		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid limit parameter")
 		return
 	}
@@ -136,14 +144,85 @@ func (a *AppointmentService) GetAppointmentsByDoctorId(c *gin.Context) {
 	if dateStr != "" {
 		date, err = time.Parse("2006-01-02", dateStr)
 		if err != nil {
+			a.log.Error("Invalid date format. Use YYYY-MM-DD.")
 			utils.ErrorResponse(c, http.StatusBadRequest, "Invalid date format. Use YYYY-MM-DD.")
 			return
 		}
 	}
-	appointments, err := a.appointmentRepo.GetAppointmentsByDoctorId(doctorIdUUID,date, page, limit)
-	if err != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, "some thing went wrong")
+
+	// Parse optional status query parameter
+	status := c.Query("status")
+	if status != "" && status != "available" && status != "booked" {
+		a.log.Error("Invalid status parameter")
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid status parameter. Allowed values: available, booked")
 		return
 	}
-	utils.SuccessResponse(c, "retrieved appointments", appointments)
+
+	appointments, err := a.appointmentRepo.GetAppointmentsByDoctorId(doctorIdUUID, date, status, page, limit)
+	if err != nil {
+		a.log.Error(err.Error())
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Something went wrong")
+		return
+	}
+	utils.SuccessResponse(c, "Retrieved appointments", appointments)
+}
+
+// retrieve appointments by speciality slug with pagination
+// @Summary Retrieve appointments by speciality slug with pagination
+// @Description Retrieve appointments by speciality slug with pagination
+// @Tags appointment
+// @Produce json
+// @Param slug path string true "speciality slug"
+// @Param page query int false "Page number"
+// @Param limit query int false "Number of items per page"
+// @Param date query string false "Appointment date in YYYY-MM-DD format"
+// @Param status query string false "Search query (based on status)" Enums(available, booked)
+// @Router /appointment/speciality/{slug} [get]
+func (a *AppointmentService) GetAppointmentsBySpeciality(c *gin.Context) {
+	slug := c.Param("slug")
+	if slug == "" {
+		a.log.Error("slug")
+		utils.ErrorResponse(c, http.StatusBadRequest, "slug")
+		return
+	}
+	// Parse pagination parameters
+	page, err := utils.GetQueryInt(c, "page", 1)
+	if err != nil {
+		a.log.Error("Invalid page parameter")
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid page parameter")
+		return
+	}
+	limit, err := utils.GetQueryInt(c, "limit", 10)
+	if err != nil {
+		a.log.Error("Invalid limit parameter")
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid limit parameter")
+		return
+	}
+	// Parse optional date query parameter
+	dateStr := c.Query("date")
+	var date time.Time
+	if dateStr != "" {
+		date, err = time.Parse("2006-01-02", dateStr)
+		if err != nil {
+			a.log.Error("Invalid date format. Use YYYY-MM-DD.")
+			utils.ErrorResponse(c, http.StatusBadRequest, "Invalid date format. Use YYYY-MM-DD.")
+			return
+		}
+	}
+
+	// Parse optional status query parameter
+	status := c.Query("status")
+	if status != "" && status != "available" && status != "booked" {
+		a.log.Error("Invalid status parameter")
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid status parameter. Allowed values: available, booked")
+		return
+	}
+
+	appointments, err := a.appointmentRepo.GetAppointmentsBySpeciality(slug, date, status, page, limit)
+	if err != nil {
+		a.log.Error(err.Error())
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+	utils.SuccessResponse(c, "Retrieved successfully", appointments)
 }

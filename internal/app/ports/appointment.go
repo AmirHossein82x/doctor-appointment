@@ -14,6 +14,7 @@ type AppointmentService interface {
 	RetrieveSpeciality(*gin.Context)
 	GetAppointmentsByDoctorId(*gin.Context)
 	GetAppointmentsBySpeciality(*gin.Context)
+	CreateAppointment(*gin.Context)
 }
 
 type AppointmentRepository interface {
@@ -21,4 +22,6 @@ type AppointmentRepository interface {
 	RetrieveSpeciality(int, int, string) ([]dto.SpecialityRetrieveResponse, error)
 	GetAppointmentsByDoctorId(uuid.UUID, time.Time, string, int, int) ([]domain.DoctorAppointment, error)
 	GetAppointmentsBySpeciality(string, time.Time, string, int, int) ([]map[string]interface{}, error)
+	AppointmentExists(uuid.UUID)(bool, error)
+	CreateAppointment(uuid.UUID, uuid.UUID)(*domain.UserAppointment, error)
 }

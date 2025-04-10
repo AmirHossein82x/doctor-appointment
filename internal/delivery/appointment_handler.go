@@ -1,10 +1,12 @@
 package delivery
 
 import (
+	"github.com/AmirHossein82x/doctor-appointment/internal/app/constants"
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/ports"
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/services"
 	"github.com/AmirHossein82x/doctor-appointment/internal/infrastructure"
 	"github.com/AmirHossein82x/doctor-appointment/internal/logger"
+	"github.com/AmirHossein82x/doctor-appointment/internal/middleware"
 	"github.com/AmirHossein82x/doctor-appointment/internal/repository"
 	"github.com/gin-gonic/gin"
 )
@@ -20,5 +22,6 @@ func SetUpAppointmentRoutes(router *gin.RouterGroup) {
 	appointmentRoute.GET("/get-specialities", appointmentHandler.RetrieveSpeciality)
 	appointmentRoute.GET("/:doctor_id", appointmentHandler.GetAppointmentsByDoctorId)
 	appointmentRoute.GET("/speciality/:slug", appointmentHandler.GetAppointmentsBySpeciality)
+	appointmentRoute.POST("/create-appointment", middleware.AuthMiddleware(constants.RoleAuthenticated), appointmentHandler.CreateAppointment)
 
 }

@@ -33,3 +33,16 @@ type DoctorAppointment struct {
 func (DoctorAppointment) TableName() string {
 	return "doctor_appointment"
 }
+
+type UserAppointment struct {
+	ID                  uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"-"` // UUID as primary key
+	UserId              uuid.UUID `gorm:"type:uuid;not null" json:"-"`
+	DoctorAppointmentId uuid.UUID `gorm:"type:uuid;not null" json:"-"`
+	Status              string    `gorm:"type:varchar(50);not null;default:'available';check:status IN ('available', 'booked')" json:"status"`
+	CreatedAt           time.Time `gorm:"type:timestamp;default:CURRENT_TIMESTAMP" json:"created_at"`
+}
+
+// TableName specifies the table name for GORM
+func (UserAppointment) TableName() string {
+	return "user_appointment"
+}

@@ -15,6 +15,11 @@ definitions:
     - end_time
     - start_time
     type: object
+  dto.AppointmentCreateRequestByUser:
+    properties:
+      appointment_id:
+        type: string
+    type: object
   dto.DoctorProfileCreateRequest:
     properties:
       bio:
@@ -193,6 +198,26 @@ paths:
       - application/json
       responses: {}
       summary: Retrieve appointments by doctor id with pagination
+      tags:
+      - appointment
+  /appointment/create-appointment:
+    post:
+      consumes:
+      - application/json
+      description: creating appointments
+      parameters:
+      - description: appointment id
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AppointmentCreateRequestByUser'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: registering appointment
       tags:
       - appointment
   /appointment/get-doctor-profiles:

@@ -128,6 +128,38 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/appointment/create-appointment": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "creating appointments",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointment"
+                ],
+                "summary": "registering appointment",
+                "parameters": [
+                    {
+                        "description": "appointment id",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AppointmentCreateRequestByUser"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/appointment/get-doctor-profiles": {
             "get": {
                 "description": "Retrieve all doctor profiles joined with user table",
@@ -590,6 +622,14 @@ const docTemplate = `{
                 },
                 "start_time": {
                     "description": "Expecting HH:MM:SS format",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.AppointmentCreateRequestByUser": {
+            "type": "object",
+            "properties": {
+                "appointment_id": {
                     "type": "string"
                 }
             }

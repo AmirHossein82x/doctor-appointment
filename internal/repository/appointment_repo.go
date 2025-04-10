@@ -141,3 +141,51 @@ func (a *AppointmentRepository) GetAppointmentsBySpeciality(slug string, date ti
 
 	return appointments, nil
 }
+
+func (a *AppointmentRepository) AppointmentExists(appointmentId uuid.UUID) (bool, error) {
+	var count int64
+	now := time.Now()
+
+	// Query to count the number of available appointments with the given ID and date >= now
+	err := a.DB.Table("doctor_appointment").
+		Where("id = ? AND status = ? AND date >= ?", appointmentId, "available", now).
+		Count(&count).Error
+
+	if err != nil {
+		return false, err // Return false and the error if the query fails
+	}
+
+	// If count is greater than 0, the appointment exists
+	return count > 0, nil
+}
+
+
+func (a *AppointmentRepository) CreateAppointment(userId uuid.UUID, appointmentId uuid.UUID) (*domain.UserAppointment, error) {
+	appointment := &domain.UserAppointment{
+		UserId:              userId,
+		DoctorAppointmentId: appointmentId,
+		Status:              "reserved",
+	}
+	// Start a transaction
+	tx := a.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+	
+	if err := tx.Model(&domain.DoctorAppointment{}).Where("id = ?", appointmentId).Update("status", "booked").Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	if err := tx.Create(appointment).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	// Commit the transaction
+	if err := tx.Commit().Error; err != nil {
+		return appointment, err
+	}
+
+	return appointment, nil
+}

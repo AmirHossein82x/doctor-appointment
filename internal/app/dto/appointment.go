@@ -13,3 +13,9 @@ type Appointment struct {
 	EndTime   string    `json:"end_time" binding:"required"`   // Expecting HH:MM:SS format
 	Status    string    `json:"status"`
 }
+
+
+
+type AppointmentCreateRequestByUser struct {
+	AppointmentId uuid.UUID `json:"appointment_id"`
+}

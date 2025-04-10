@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/AmirHossein82x/doctor-appointment/internal/app/dto"
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/ports"
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/utils"
 	"github.com/gin-gonic/gin"
@@ -225,4 +226,50 @@ func (a *AppointmentService) GetAppointmentsBySpeciality(c *gin.Context) {
 		return
 	}
 	utils.SuccessResponse(c, "Retrieved successfully", appointments)
+}
+
+
+
+
+// Register appointment
+// @Summary registering appointment
+// @Description creating appointments
+// @Tags appointment
+// @Accept json
+// @Produce json
+// @Param request body dto.AppointmentCreateRequestByUser true "appointment id"
+// @Security BearerAuth
+// @Router /appointment/create-appointment [post]
+func (a *AppointmentService) CreateAppointment(c *gin.Context) {
+	userIdStr := c.MustGet("id").(string)
+	userId, err := uuid.Parse(userIdStr)
+	if err != nil {
+		a.log.Error("can not convert user id to uuid")
+		utils.ErrorResponse(c, 400, "can not convert user id to uuid")
+
+	}
+	var req dto.AppointmentCreateRequestByUser
+	if err := c.BindJSON(&req);err!= nil {
+		a.log.Error("bad request")
+		utils.ErrorResponse(c, 400, "bad request")
+		return
+	}
+	exists, err := a.appointmentRepo.AppointmentExists(req.AppointmentId)
+	if err != nil {
+		a.log.Error("some thing wrong with db")
+		utils.ErrorResponse(c, 400, "bad request")
+		return
+	}
+	if !exists {
+		a.log.Error("not valid appointment")
+		utils.ErrorResponse(c, 400, "not valid appointment")
+		return
+	}
+	appointment, err := a.appointmentRepo.CreateAppointment(userId, req.AppointmentId)
+	if err != nil {
+		a.log.Error("some thing wrong with db")
+		utils.ErrorResponse(c, 400, "some thing wrong with db")
+		return
+	}
+	utils.SuccessResponse(c, "ok", appointment)
 }

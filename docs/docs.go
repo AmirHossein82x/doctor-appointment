@@ -516,6 +516,49 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/doctor/booked-appointments": {
+            "get": {
+                "description": "retrieve appointments for doctor",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "doctor"
+                ],
+                "summary": "retrieve appointments for doctor",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Appointment date in YYYY-MM-DD format",
+                        "name": "date",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "reserved",
+                            "cancelled"
+                        ],
+                        "type": "string",
+                        "description": "Search query (based on status)",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/doctor/create-appointment": {
             "post": {
                 "security": [

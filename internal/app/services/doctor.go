@@ -2,6 +2,7 @@ package services
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/dto"
 	"github.com/AmirHossein82x/doctor-appointment/internal/app/ports"
@@ -95,7 +96,6 @@ func (d *DoctorService) GetAvailableAppointments(c *gin.Context) {
 		utils.ErrorResponse(c, http.StatusBadRequest, "failed to get doctor id")
 		return
 	}
-	
 
 	// Parse pagination parameters
 	page, err := utils.GetQueryInt(c, "page", 1)
@@ -109,6 +109,60 @@ func (d *DoctorService) GetAvailableAppointments(c *gin.Context) {
 		return
 	}
 	appointments, err := d.doctorRepository.GetAvailableAppointments(doctorID, page, limit)
+	if err != nil {
+		d.log.Error("internal server error")
+		utils.ErrorResponse(c, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	utils.SuccessResponse(c, "retrieved suucessfully", appointments)
+}
+
+
+
+// retrieve appointments for doctor
+// @Summary retrieve appointments for doctor
+// @Description retrieve appointments for doctor
+// @Tags doctor
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Number of items per page"
+// @Param date query string false "Appointment date in YYYY-MM-DD format"
+// @Param status query string false "Search query (based on status)" Enums(reserved,cancelled)
+// @Router /doctor/booked-appointments [get]
+func (d *DoctorService) GetBookedAppointments(c *gin.Context) {
+	// Get and parse Doctor ID from context
+	doctorID, err := utils.GetDoctorID(c)
+	if err != nil {
+		d.log.Error("failed to get doctor id")
+		utils.ErrorResponse(c, http.StatusBadRequest, "failed to get doctor id")
+		return
+	}
+
+	status := c.Query("status")
+
+	// Parse pagination parameters
+	page, err := utils.GetQueryInt(c, "page", 1)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid page parameter")
+		return
+	}
+	limit, err := utils.GetQueryInt(c, "limit", 10)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid limit parameter")
+		return
+	}
+	// Parse optional date query parameter
+	dateStr := c.Query("date")
+	var date time.Time
+	if dateStr != "" {
+		date, err = time.Parse("2006-01-02", dateStr)
+		if err != nil {
+			d.log.Error("Invalid date format. Use YYYY-MM-DD.")
+			utils.ErrorResponse(c, http.StatusBadRequest, "Invalid date format. Use YYYY-MM-DD.")
+			return
+		}
+	}
+	appointments, err := d.doctorRepository.GetBookedAppointments(doctorID, status, date, page, limit)
 	if err != nil {
 		d.log.Error("internal server error")
 		utils.ErrorResponse(c, http.StatusInternalServerError, "internal server error")

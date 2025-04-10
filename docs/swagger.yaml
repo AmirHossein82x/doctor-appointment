@@ -425,6 +425,35 @@ paths:
       summary: get all available appointments
       tags:
       - doctor
+  /doctor/booked-appointments:
+    get:
+      description: retrieve appointments for doctor
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Appointment date in YYYY-MM-DD format
+        in: query
+        name: date
+        type: string
+      - description: Search query (based on status)
+        enum:
+        - reserved
+        - cancelled
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: retrieve appointments for doctor
+      tags:
+      - doctor
   /doctor/create-appointment:
     post:
       consumes:

@@ -19,7 +19,7 @@ func NewDoctorRepository() *DoctorRepository {
 
 func (d *DoctorRepository) CreateAppointment(date, startTime, endTime time.Time, doctorId uuid.UUID) (domain.DoctorAppointment, error) {
 	appointment := domain.DoctorAppointment{
-		Date:            date,                         
+		Date:            date,
 		StartTime:       startTime.Format("15:04:05"), // Convert to HH:MM:SS format
 		EndTime:         endTime.Format("15:04:05"),   // Convert to HH:MM:SS format
 		DoctorProfileID: doctorId,
@@ -48,4 +48,39 @@ func (d *DoctorRepository) GetAvailableAppointments(doctorId uuid.UUID, page, li
 		Find(&appointments).Error
 
 	return appointments, err
+}
+
+func (d *DoctorRepository) GetBookedAppointments(doctorId uuid.UUID, status string, date time.Time, page, limit int) ([]map[string]interface{}, error) {
+	var appointments []map[string]interface{}
+	offset := (page - 1) * limit
+
+	// Build the base query
+	query := d.DB.Table("doctor_appointment").
+		Select(`
+			users.name AS patient_name,
+			users.phone AS phone,
+			user_appointment.status as status,
+			doctor_appointment.date,
+			doctor_appointment.start_time,
+			doctor_appointment.end_time
+		`).
+		Joins("JOIN user_appointment ON doctor_appointment.id = user_appointment.doctor_appointment_id").
+		Joins("JOIN users ON user_appointment.user_id = users.id").
+		Where("doctor_appointment.date >= ? AND doctor_appointment.doctor_profile_id = ?", time.Now(), doctorId)
+
+	if status != "" {
+		query = query.Where("user_appointment.status = ?", status)
+	}
+	if !date.IsZero() {
+		query = query.Where("doctor_appointment.date = ?", date)
+	}
+	query = query.Offset(offset).Limit(limit)
+
+	// Execute the query
+	err := query.Scan(&appointments).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return appointments, nil
 }
